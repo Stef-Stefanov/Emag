@@ -1,7 +1,7 @@
 # Emag_clone
-by
-Sotir Donkov    : sdonkov
-Stefan Stefanov : Stef-Stefanov
+by: <br />
+**Sotir Donkov**    : sdonkov <br />
+**Stefan Stefanov** : Stef-Stefanov <br />
 
 For a final project in ITTalents_14
 
