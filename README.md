@@ -1,4 +1,8 @@
-# Emag
+# Emag_clone
+by
+Sotir Donkov    : sdonkov
+Stefan Stefanov : Stef-Stefanov
+
 For a final project in ITTalents_14
 
 Категории артикули. Подкатегории. Преглед на артикул. Възможност за покупка в количката. Възможност за администраторски достъп - смяна на
