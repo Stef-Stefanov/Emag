@@ -9,5 +9,4 @@ public class EmagApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(EmagApplication.class, args);
 	}
-
 }
