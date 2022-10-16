@@ -1,5 +1,7 @@
 package com.example.emag.model.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
 import javax.persistence.*;
@@ -23,11 +25,9 @@ public class Product {
     private double regularPrice;
     @Column
     private int quantity;
-    @Column
-    private long categoryId;
+    @Column(name = "category_id")
+    private Long categoryId;
     @Column
     private Long discountId;
-
-
 
 }
