@@ -1,49 +1,34 @@
 package com.example.emag.controller;
 
-import com.example.emag.model.dto.ErrorDTO;
+import com.example.emag.model.dto.category.CategoryDTO;
 import com.example.emag.model.entities.Category;
 import com.example.emag.model.exceptions.NotFoundException;
 import com.example.emag.model.repositories.CategoryRepository;
+import com.example.emag.service.CategoryService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import javax.swing.text.html.Option;
-import java.time.LocalDateTime;
-import java.util.Optional;
-
 @RestController
-public class CategoryController {
+public class CategoryController extends AbstractController {
 
     @Autowired
     private CategoryRepository repo;
-
+    @Autowired
+    private ModelMapper modelMapper;
+    @Autowired
+    private CategoryService categoryService;
     @PostMapping("/categories")
     public Category addCategory(@RequestBody Category category){
         //todo check if name is valid
         // check other things
-        repo.save(category);
-        return category;
+        return repo.save(category);
     }
 
     @GetMapping("/categories/{id}")
-    public Category getCategory(@PathVariable long id) {
-        Optional<Category> category = repo.findById(id);
-        if (category.isPresent()) {
-            return category.get();
-        } else {
-            throw new NotFoundException("Category not found");
-        }
-    }
-
-    @ExceptionHandler(NotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    private ErrorDTO handleException(Exception ex){
-        ErrorDTO dto = new ErrorDTO();
-        dto.setMsg(ex.getMessage());
-        dto.setStatus(HttpStatus.NOT_FOUND.value());
-        dto.setTime(LocalDateTime.now());
-        return dto;
+    public CategoryDTO getCategory(@PathVariable long id) {
+        Category category = repo.findById(id).orElseThrow(() -> new NotFoundException("Category not found!"));
+        return modelMapper.map(category,CategoryDTO.class);
     }
 
     @DeleteMapping(value = "/categories/{id}", headers = "password=dve")

@@ -17,17 +17,11 @@ public class Category {
     private long id;
     @Column
     private String name;
-    // todo many to one self join
-//    @ManyToOne
-//    @JoinColumn(name="parent_category_id", insertable = false, updatable = false)
-//    private Category parentCategory;
-
-    @Column(name = "parent_category_id")
-    private Long parentCategoryId;
-
-//    @OneToMany(mappedBy="parentCategory")
-//    private Set<Category> childCategories;
-//    @JsonSerialize(include = JsonSerialize.Inclusion.NON_EMPTY)//Avoiding empty json arrays.objects
-//    @OneToMany(mappedBy = "id", fetch = FetchType.EAGER)
-//    private List<Category> subCategory;
+    @ManyToOne
+    @JoinColumn(name = "parent_category_id")
+    private Category parentCategory;
+    @OneToMany(mappedBy = "parentCategory")
+    private List<Category> subCategories;
+    @OneToMany(mappedBy = "category")
+    private List<Product> products;
 }

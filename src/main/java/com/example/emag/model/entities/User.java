@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -16,7 +17,7 @@ import javax.persistence.*;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
     @Column
     private String firstName;
     @Column
@@ -35,4 +36,12 @@ public class User {
     private String phoneNumber;
     @Column
     private String birthDate;
+    @ManyToMany
+    @JoinTable(name = "users_like_products",
+    joinColumns = @JoinColumn(name = "user_id"),
+    inverseJoinColumns = @JoinColumn(name = "product_id"))
+    private List<Product> likedProducts;
+    @OneToMany(mappedBy = "user")
+    private List<UserProductsInCart> productsInCart;
+
 }

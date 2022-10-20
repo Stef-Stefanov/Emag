@@ -1,6 +1,7 @@
 package com.example.emag.model.entities;
 
 import lombok.Data;
+import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
 
@@ -14,6 +15,7 @@ public class ProductImage {
     private long id;
     @Column
     private String url;
-    @Column
-    private long productId;
+    @ManyToOne
+    @JoinColumn(name = "product_id")
+    private Product productId;
 }

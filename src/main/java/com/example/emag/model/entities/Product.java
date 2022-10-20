@@ -3,8 +3,10 @@ package com.example.emag.model.entities;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
+import org.springframework.context.annotation.Scope;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "products")
@@ -25,9 +27,17 @@ public class Product {
     private double regularPrice;
     @Column
     private int quantity;
-    @Column(name = "category_id")
-    private Long categoryId;
+    @ManyToOne()
+    @JoinColumn(name = "category_id")
+    private Category category;
     @Column
     private Long discountId;
+    @ManyToMany(mappedBy = "likedProducts")
+    private List<User> likes;
+    @OneToMany(mappedBy = "product")
+    private List<UserProductsInCart> productsInCart;
+    @OneToMany(mappedBy = "productId")
+    private List<ProductImage> productImages;
+
 
 }
