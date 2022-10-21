@@ -118,7 +118,7 @@ public class ProductService extends AbstractService{
     }
 
     private void validateProduct(ProductAddDTO p) {
-        if(p.getName().length() > 255 || p.getName().trim().length() < 1){
+        if(p.getName().length() > 255 || p.getName().strip().length() < 1){
             throw new BadRequestException("Product name size is not valid");
         }
         if(p.getRegularPrice() <= 0){

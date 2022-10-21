@@ -2,6 +2,7 @@ package com.example.emag.service;
 
 import com.example.emag.model.dto.product.ProductAddDTO;
 import com.example.emag.model.entities.Category;
+import com.example.emag.model.entities.Feature;
 import com.example.emag.model.entities.Product;
 import com.example.emag.model.entities.User;
 import com.example.emag.model.exceptions.NotFoundException;
@@ -24,6 +25,8 @@ public abstract class AbstractService {
     protected UserCartRepository userCartRepository;
     @Autowired
     protected ProductImageRepository productImageRepository;
+    @Autowired
+    protected FeatureRepository featureRepository;
 
 //    protected Product findProductById(long id) {
 //        return productRepository.findById(id).orElseThrow(() -> new NotFoundException("Product not found"));
@@ -40,6 +43,10 @@ public abstract class AbstractService {
 
     protected Product getProductById(long pid){
         return productRepository.findById(pid).orElseThrow(() -> new NotFoundException("Product not found"));
+    }
+
+    protected Feature getFeatureById(long id){
+        return featureRepository.findById(id).orElseThrow(() -> new NotFoundException("Feature not found"));
     }
 
 }
