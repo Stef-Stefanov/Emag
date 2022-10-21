@@ -1,16 +1,16 @@
 package com.example.emag.controller;
 
-import com.example.emag.model.dto.product.LikedProductsDTO;
-import com.example.emag.model.dto.product.ProductAddDTO;
-import com.example.emag.model.dto.product.ProductDTO;
-import com.example.emag.model.dto.product.ProductWithFeaturesDTO;
+import com.example.emag.model.dto.FeatureDTO;
+import com.example.emag.model.dto.product.*;
 import com.example.emag.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.awt.print.Pageable;
 import java.util.List;
 
 @RestController
@@ -46,7 +46,6 @@ public class ProductController extends AbstractController{
     @DeleteMapping("/products/{pid}/cart")
     public int removeProductFromCart(@PathVariable int pid, HttpServletRequest req){
         //todo check if logged?
-        //should i check if user is logged to add or remove product from cart
         int uid = getLoggedUserId(req);
         return productService.removeProductFromCart(pid,uid);
     }
@@ -67,7 +66,6 @@ public class ProductController extends AbstractController{
         //todo check if admin
         // check if ongoing purchases
         // cancel all purchases
-        // what to return
         return productService.deleteById(pid);
     }
 
@@ -82,20 +80,25 @@ public class ProductController extends AbstractController{
         return productService.searchByWord(word);
     }
 
+    @GetMapping("products")
+    public List<ProductDTO> getAllProducts(){
+        return productService.getAllProducts();
+    }
+    //todo testing remove feature
+    @DeleteMapping("products/{pid}/features/{fid}")
+    public ProductFeatureDTO removeFeatureOfProduct(@PathVariable int pid, @PathVariable int fid){
+        //todo check if admin
+        return productService.deleteFeature(pid, fid);
+    }
+
 //    @GetMapping("/products")
-//    public List<Product> getAllProducts(@RequestParam long category,
+//    public List<ProductDTO> getAllProductsByCategory(@RequestParam long category,
 //                                        @RequestParam(required = false) boolean sortByPrice,
 //                                        @RequestParam(required = false) boolean desc) {
-//        Sort sort = null;
-//        if (sortByPrice) {
-//            sort = Sort.by("regularPrice");
-//            if (desc) {
-//                sort = sort.descending();
-//            }
-//        }
-//        return productRepository.findAllByCategoryId(category, sort);
-//    }
 //
-//    //
+//        return productService.findAllByCategoryId(category, sortByPrice, desc);
+//    }
+
+    //
 
 }

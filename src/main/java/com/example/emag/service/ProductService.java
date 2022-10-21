@@ -1,17 +1,27 @@
 package com.example.emag.service;
 
+import com.example.emag.model.dto.FeatureDTO;
 import com.example.emag.model.dto.product.*;
 import com.example.emag.model.entities.*;
 import com.example.emag.model.exceptions.BadRequestException;
+import com.example.emag.model.exceptions.NotFoundException;
 import org.apache.commons.io.FilenameUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.awt.print.Pageable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static java.lang.Math.toIntExact;
 
 @Service
 public class ProductService extends AbstractService{
@@ -152,7 +162,12 @@ public class ProductService extends AbstractService{
 
     public List<ProductDTO> searchByWord(String word) {
         validateWord(word);
-        List<Product> products = productRepository.findAllByNameContainingIgnoreCase(word);
+        List<Product> products = productRepository.findAllByNameContainingIgnoreCase(word.strip());
+        if(products.isEmpty()){
+            throw new NotFoundException("No products found");
+        }
+        //todo pages
+//        PageRequest pr = PageRequest.of(page,size);
         return products.stream().map(p -> modelMapper.map(p, ProductDTO.class)).collect(Collectors.toList());
     }
 
@@ -161,4 +176,41 @@ public class ProductService extends AbstractService{
             throw new BadRequestException("Invalid word, must enter 2 characters at least");
         }
     }
+
+    public List<ProductDTO> getAllProducts() {
+        return productRepository.findAll().stream().map(p -> modelMapper.map(p, ProductDTO.class)).collect(Collectors.toList());
+    }
+
+    public ProductFeatureDTO deleteFeature(long pid, long fid) {
+        Product product = getProductById(pid);
+        Feature feature = getFeatureById(fid);
+        ProductFeatureKey pk = new ProductFeatureKey();
+        pk.setProductId(pid);
+        ProductFeature productFeature = new ProductFeature();
+        productFeature.setId(pk);
+        productFeature.setFeature(feature);
+        productFeature.setProduct(product);
+        pk.setFeatureId(fid);
+        if(!product.getProductFeatures().contains(productFeatureRepository.getReferenceById(pk))) {
+            throw new NotFoundException("Feature not found in current product");
+        }
+        productFeature.setValue(productFeatureRepository.getReferenceById(pk).getValue());
+        productFeatureRepository.deleteById(pk);
+        return modelMapper.map(productFeature, ProductFeatureDTO.class);
+
+    }
+
+//    public List<ProductDTO> findAllByCategoryId(long category, boolean sortByPrice, boolean desc) {
+//        Sort sort = null;
+//        if (sortByPrice) {
+//            sort = Sort.by("regularPrice");
+//            if (desc) {
+//                sort = sort.descending();
+//            }
+//        }
+//        return productRepository.findAllByCategoryId(category, sort).
+//                stream().map(p-> modelMapper.map(p, ProductDTO.class)).
+//                collect(Collectors.toList());
+//        //todo pages
+//    }
 }
