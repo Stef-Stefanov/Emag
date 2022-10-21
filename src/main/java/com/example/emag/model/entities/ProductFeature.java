@@ -6,7 +6,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 
-@Entity
+@Entity(name = "products_have_features")
 @Getter
 @Setter
 @NoArgsConstructor

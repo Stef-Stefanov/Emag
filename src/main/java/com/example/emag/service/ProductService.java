@@ -1,8 +1,6 @@
 package com.example.emag.service;
 
-import com.example.emag.model.dto.product.LikedProductsDTO;
-import com.example.emag.model.dto.product.ProductAddDTO;
-import com.example.emag.model.dto.product.ProductDTO;
+import com.example.emag.model.dto.product.*;
 import com.example.emag.model.entities.*;
 import com.example.emag.model.exceptions.BadRequestException;
 import org.apache.commons.io.FilenameUtils;
@@ -12,18 +10,22 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductService extends AbstractService{
 
-    public ProductDTO findById(Long id){
+    public ProductWithFeaturesDTO getById(Long id){
         Product p = getProductById(id);
-        return modelMapper.map(p,ProductDTO.class);
+        return modelMapper.map(p,ProductWithFeaturesDTO.class);
     }
 
-    public void deleteById(long pid) {
-        getProductById(pid);
+    public ProductWithFeaturesDTO deleteById(long pid) {
+        Product p = getProductById(pid);
+        ProductWithFeaturesDTO dto = modelMapper.map(p, ProductWithFeaturesDTO.class);
         productRepository.deleteById(pid);
+        return dto;
     }
 
     public ProductDTO add(ProductAddDTO p) {
@@ -105,7 +107,23 @@ public class ProductService extends AbstractService{
         pk.setUserId(uid);
         userCartRepository.deleteById(pk);
         //todo what to return when removing product
-        return 222;
+        return 0;
+    }
+
+    public ProductWithFeaturesDTO addFeature(long pid, long fid, String value) {
+        Product product = getProductById(pid);
+        Feature feature = getFeatureById(fid);
+        ProductFeatureKey pk = new ProductFeatureKey();
+        pk.setProductId(pid);
+        pk.setFeatureId(fid);
+        ProductFeature productFeature = new ProductFeature();
+        productFeature.setId(pk);
+        productFeature.setFeature(feature);
+        productFeature.setProduct(product);
+        productFeature.setValue(value);
+        modelMapper.map(productFeatureRepository.save(productFeature), ProductFeatureDTO.class);
+        return modelMapper.map(product, ProductWithFeaturesDTO.class);
+
     }
 
     private void validateQuantity(int quantity) {
@@ -132,5 +150,15 @@ public class ProductService extends AbstractService{
         }
     }
 
+    public List<ProductDTO> searchByWord(String word) {
+        validateWord(word);
+        List<Product> products = productRepository.findAllByNameContainingIgnoreCase(word);
+        return products.stream().map(p -> modelMapper.map(p, ProductDTO.class)).collect(Collectors.toList());
+    }
 
+    private void validateWord(String word) {
+        if(word.length() < 2){
+            throw new BadRequestException("Invalid word, must enter 2 characters at least");
+        }
+    }
 }

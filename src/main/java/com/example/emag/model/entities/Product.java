@@ -38,6 +38,8 @@ public class Product {
     private List<UserProductsInCart> productsInCart;
     @OneToMany(mappedBy = "productId")
     private List<ProductImage> productImages;
+    @OneToMany(mappedBy = "product")
+    private List<ProductFeature> productFeatures;
 
 
 }

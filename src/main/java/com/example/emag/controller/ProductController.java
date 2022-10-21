@@ -1,28 +1,17 @@
 package com.example.emag.controller;
 
-import com.example.emag.model.dto.ErrorDTO;
 import com.example.emag.model.dto.product.LikedProductsDTO;
 import com.example.emag.model.dto.product.ProductAddDTO;
 import com.example.emag.model.dto.product.ProductDTO;
-import com.example.emag.model.entities.Product;
-import com.example.emag.model.entities.UserProductsInCart;
-import com.example.emag.model.exceptions.NotFoundException;
-import com.example.emag.model.repositories.ProductRepository;
+import com.example.emag.model.dto.product.ProductWithFeaturesDTO;
 import com.example.emag.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import java.awt.print.Pageable;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 public class ProductController extends AbstractController{
@@ -31,8 +20,8 @@ public class ProductController extends AbstractController{
     private ProductService productService;
 
     @GetMapping("/products/{pid}")
-    public ProductDTO getProductById(@PathVariable long pid) {
-        return productService.findById(pid);
+    public ProductWithFeaturesDTO getProductById(@PathVariable long pid) {
+        return productService.getById(pid);
     }
     @PostMapping("/products")
     public ProductDTO addProduct(@RequestBody ProductAddDTO p){
@@ -74,12 +63,23 @@ public class ProductController extends AbstractController{
         return productService.edit(pid, dto);
     }
     @DeleteMapping(value = "products/{pid}", headers = "password=dve")
-    public void deleteProduct(@PathVariable long pid){
+    public ProductWithFeaturesDTO deleteProduct(@PathVariable long pid){
         //todo check if admin
         // check if ongoing purchases
         // cancel all purchases
         // what to return
-        productService.deleteById(pid);
+        return productService.deleteById(pid);
+    }
+
+    @PostMapping("products/{pid}/features/{fid}")
+    public ProductWithFeaturesDTO addFeatureToProduct(@PathVariable int pid, @PathVariable int fid, @RequestParam String value){
+        //todo check if admin
+        return productService.addFeature(pid, fid, value);
+    }
+
+    @GetMapping("products/search/{word}")
+    public List<ProductDTO> searchByWord(@PathVariable String word){
+        return productService.searchByWord(word);
     }
 
 //    @GetMapping("/products")

@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 public class FeatureService extends AbstractService{
 
     public FeatureDTO add(FeatureDTO dto) {
-        System.out.println(dto.getName());
         validate(dto);
         Feature feature = new Feature();
         feature.setName(dto.getName());
@@ -23,8 +22,10 @@ public class FeatureService extends AbstractService{
         }
     }
 
-    public void delete(long fid) {
-        getFeatureById(fid);
+    public FeatureDTO delete(long fid) {
+        Feature feature = getFeatureById(fid);
+        FeatureDTO dto = modelMapper.map(feature, FeatureDTO.class);
         featureRepository.deleteById(fid);
+        return dto;
     }
 }

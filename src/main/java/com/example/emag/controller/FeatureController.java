@@ -17,9 +17,8 @@ public class FeatureController extends AbstractController {
     }
 
     @DeleteMapping("features/{fid}")
-    public void deleteFeature(@PathVariable int fid){
+    public FeatureDTO deleteFeature(@PathVariable int fid){
         //todo check if admin
-        //what to return
-        featureService.delete(fid);
+        return featureService.delete(fid);
     }
 }
