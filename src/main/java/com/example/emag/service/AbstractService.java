@@ -1,8 +1,6 @@
 package com.example.emag.service;
 
 import com.example.emag.model.dto.product.ProductAddDTO;
-import com.example.emag.model.dto.product.ProductDTO;
-import com.example.emag.model.dto.user.UserDTO;
 import com.example.emag.model.entities.Category;
 import com.example.emag.model.entities.Product;
 import com.example.emag.model.entities.User;
@@ -31,7 +29,7 @@ public abstract class AbstractService {
 //        return productRepository.findById(id).orElseThrow(() -> new NotFoundException("Product not found"));
 //    }
 
-    protected Category findCategoryById(ProductAddDTO p) {
+    protected Category getCategoryById(ProductAddDTO p) {
         return categoryRepository.findById(p.getCategoryId()).orElseThrow
                 (() -> new NotFoundException("Category not found"));
     }

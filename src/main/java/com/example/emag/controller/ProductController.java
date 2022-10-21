@@ -1,6 +1,7 @@
 package com.example.emag.controller;
 
 import com.example.emag.model.dto.ErrorDTO;
+import com.example.emag.model.dto.product.LikedProductsDTO;
 import com.example.emag.model.dto.product.ProductAddDTO;
 import com.example.emag.model.dto.product.ProductDTO;
 import com.example.emag.model.entities.Product;
@@ -35,28 +36,52 @@ public class ProductController extends AbstractController{
     }
     @PostMapping("/products")
     public ProductDTO addProduct(@RequestBody ProductAddDTO p){
+        //todo check if admin
         return productService.add(p);
     }
 
     @PostMapping("/products/{pid}/like")
-    public ProductDTO likeProduct(@PathVariable int pid, HttpServletRequest req){
+    public LikedProductsDTO likeProduct(@PathVariable int pid, HttpServletRequest req){
+        //todo check if logged
         int uid = getLoggedUserId(req);
         return productService.like(pid,uid);
     }
 
     @PostMapping("/products/{pid}/cart")
-    public int addProductInCart(@PathVariable int pid, HttpServletRequest req){
+    public int addProductInCart(@PathVariable int pid, HttpServletRequest req, @RequestParam int quantity){
+        //todo check if logged?
         int uid = getLoggedUserId(req);
-        return productService.addToCart(pid,uid);
+        return productService.addToCart(pid, uid, quantity);
     }
+
+    @DeleteMapping("/products/{pid}/cart")
+    public int removeProductFromCart(@PathVariable int pid, HttpServletRequest req){
+        //todo check if logged?
+        //should i check if user is logged to add or remove product from cart
+        int uid = getLoggedUserId(req);
+        return productService.removeProductFromCart(pid,uid);
+    }
+
     @PostMapping("/products/{pid}/image")
     public String addPicture(@RequestParam MultipartFile file, @PathVariable long pid){
+        //todo check if admin
         return productService.addPicture(file,pid);
     }
+
     @PostMapping("products/{pid}")
     public ProductDTO editProduct(@PathVariable long pid,@RequestBody ProductAddDTO dto){
+        //todo check if admin
         return productService.edit(pid, dto);
     }
+    @DeleteMapping(value = "products/{pid}", headers = "password=dve")
+    public void deleteProduct(@PathVariable long pid){
+        //todo check if admin
+        // check if ongoing purchases
+        // cancel all purchases
+        // what to return
+        productService.deleteById(pid);
+    }
+
 //    @GetMapping("/products")
 //    public List<Product> getAllProducts(@RequestParam long category,
 //                                        @RequestParam(required = false) boolean sortByPrice,
@@ -72,13 +97,5 @@ public class ProductController extends AbstractController{
 //    }
 //
 //    //
-//    @DeleteMapping(value = "products/{id}", headers = "password=dve")
-//    public void deleteProduct(@PathVariable long id) {
-//        // todo check if admin
-//        // check if ongoing purchases
-//        // cancel all purchases
-//        // check if exists
-////        productRepository.deleteById(id);
-//    }
 
 }

@@ -1,5 +1,6 @@
 package com.example.emag.service;
 
+import com.example.emag.model.dto.product.LikedProductsDTO;
 import com.example.emag.model.dto.product.ProductAddDTO;
 import com.example.emag.model.dto.product.ProductDTO;
 import com.example.emag.model.entities.*;
@@ -11,7 +12,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.List;
 
 @Service
 public class ProductService extends AbstractService{
@@ -21,10 +21,14 @@ public class ProductService extends AbstractService{
         return modelMapper.map(p,ProductDTO.class);
     }
 
+    public void deleteById(long pid) {
+        getProductById(pid);
+        productRepository.deleteById(pid);
+    }
+
     public ProductDTO add(ProductAddDTO p) {
-        //validation
         validateProduct(p);
-        Category category = findCategoryById(p);
+        Category category = getCategoryById(p);
         Product product = new Product();
         product.setName(p.getName());
         product.setRegularPrice(p.getRegularPrice());
@@ -32,24 +36,23 @@ public class ProductService extends AbstractService{
         product.setRegularPrice(p.getRegularPrice());
         product.setQuantity(p.getQuantity());
         product.setCategory(category);
-//        System.out.println(category.getName() + " " + category.getId());
         return modelMapper.map(productRepository.save(product), ProductDTO.class);
     }
 
-
-
-    public ProductDTO like(int pid, int uid) {
+    public LikedProductsDTO like(int pid, int uid) {
         User u = getUserById(uid);
         Product p = getProductById(pid);
         if(u.getLikedProducts().contains(p)){
-            throw new BadRequestException("Product already liked");
+            u.getLikedProducts().remove(p);
+        }else{
+            u.getLikedProducts().add(p);
         }
-        u.getLikedProducts().add(p);
         userRepository.save(u);
-        return modelMapper.map(p,ProductDTO.class);
+        return modelMapper.map(u,LikedProductsDTO.class);
     }
 
-    public int addToCart(long pid, long uid) {
+    public int addToCart(long pid, long uid, int quantity) {
+        validateQuantity(quantity);
         UserProductsInCartKey pk = new UserProductsInCartKey();
         pk.setUserId(uid);
         pk.setProductId(pid);
@@ -59,10 +62,7 @@ public class ProductService extends AbstractService{
         productsInCart.setProduct(p);
         productsInCart.setUser(u);
         productsInCart.setId(pk);
-        productsInCart.setQuantity(5);
-        System.out.println(productsInCart);
-//        userRepository.save(u);
-//        productRepository.save(p);
+        productsInCart.setQuantity(quantity);
         userCartRepository.save(productsInCart);
         return productsInCart.getQuantity();
     }
@@ -87,17 +87,34 @@ public class ProductService extends AbstractService{
         return image.getUrl();
     }
 
-
     public ProductDTO edit(long pid, ProductAddDTO dto) {
         Product p = getProductById(pid);
         validateProduct(dto);
-        Category category = findCategoryById(dto);
+        Category category = getCategoryById(dto);
         p.setCategory(category);
         p.setName(dto.getName());
         p.setDescription(dto.getDescription());
         p.setQuantity(dto.getQuantity());
         p.setRegularPrice(dto.getRegularPrice());
         return modelMapper.map(productRepository.save(p), ProductDTO.class);
+    }
+
+    public int removeProductFromCart(long pid, long uid) {
+        UserProductsInCartKey pk = new UserProductsInCartKey();
+        pk.setProductId(pid);
+        pk.setUserId(uid);
+        userCartRepository.deleteById(pk);
+        //todo what to return when removing product
+        return 222;
+    }
+
+    private void validateQuantity(int quantity) {
+        if(quantity <= 0){
+            throw new BadRequestException ("Quantity must be positive");
+        }
+        if(quantity > 100){
+            throw new BadRequestException ("Max quantity is 100");
+        }
     }
 
     private void validateProduct(ProductAddDTO p) {
@@ -110,5 +127,10 @@ public class ProductService extends AbstractService{
         if(p.getQuantity() <= 0){
             throw new BadRequestException("Quantity must be positive");
         }
+        if(p.getQuantity() > 100){
+            throw new BadRequestException("Max quantity is 100");
+        }
     }
+
+
 }
