@@ -26,7 +26,7 @@ public abstract class AbstractController {
 
     @ExceptionHandler(value = BadRequestException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorDTO handeBadRequest(Exception e){
+    public ErrorDTO handleBadRequest(Exception e){
         return buildError(e, HttpStatus.BAD_REQUEST);
     }
 
