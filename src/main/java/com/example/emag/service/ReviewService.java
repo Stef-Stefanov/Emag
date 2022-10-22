@@ -21,7 +21,7 @@ public class ReviewService extends AbstractService{
         Review review = new Review();
         review.setProduct(product);
         review.setUser(user);
-        review.setCreatedAt(r.getCreatedAt());
+        review.setCreatedAt(LocalDateTime.now());
         review.setRating(r.getRating());
         review.setText(r.getText());
         return modelMapper.map(reviewRepository.save(review), ReviewResponseDTO.class);
@@ -33,9 +33,6 @@ public class ReviewService extends AbstractService{
         }
         if(dto.getText().strip().length() < 1){
             throw new BadRequestException("Empty review");
-        }
-        if(dto.getCreatedAt().isBefore(LocalDateTime.now())){
-            throw new BadRequestException("Fix created at date it's in the past");
         }
     }
 }
