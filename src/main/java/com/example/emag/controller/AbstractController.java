@@ -64,7 +64,7 @@ public abstract class AbstractController {
         return (int) session.getAttribute(USER_ID);
     }
 
-    public void logUser(HttpServletRequest req, int id){
+    public void logUser(HttpServletRequest req, long id){
         HttpSession session = req.getSession();
         session.setAttribute(LOGGED, true);
         session.setAttribute(USER_ID, id);
