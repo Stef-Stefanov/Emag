@@ -38,22 +38,21 @@ public class ProductService extends AbstractService{
         return dto;
     }
 
-    public ProductDTO add(ProductAddDTO p) {
-        validateProduct(p);
-        Category category = getCategoryById(p);
+    public ProductDTO add(ProductAddDTO dto) {
+        validateProduct(dto);
+        Category category = getCategoryById(dto);
         Product product = new Product();
-        product.setName(p.getName());
-        product.setRegularPrice(p.getRegularPrice());
-        product.setDescription(p.getDescription());
-        product.setRegularPrice(p.getRegularPrice());
-        product.setQuantity(p.getQuantity());
+        checkIfDiscountExist(dto, product);
+        product.setName(dto.getName());
+        product.setRegularPrice(dto.getRegularPrice());
+        product.setDescription(dto.getDescription());
+        product.setRegularPrice(dto.getRegularPrice());
+        product.setQuantity(dto.getQuantity());
         product.setCategory(category);
-        if(p.getDiscountId() != null){
-            Discount discount = getDiscountById(p.getDiscountId());
-            product.setDiscount(discount);
-        }
         return modelMapper.map(productRepository.save(product), ProductDTO.class);
     }
+
+
 
     public LikedProductsDTO like(int pid, int uid) {
         User u = getUserById(uid);
@@ -106,6 +105,7 @@ public class ProductService extends AbstractService{
     public ProductDTO edit(long pid, ProductAddDTO dto) {
         Product p = getProductById(pid);
         validateProduct(dto);
+        checkIfDiscountExist(dto, p);
         Category category = getCategoryById(dto);
         p.setCategory(category);
         p.setName(dto.getName());
@@ -164,6 +164,13 @@ public class ProductService extends AbstractService{
         }
     }
 
+    private void checkIfDiscountExist(ProductAddDTO dto, Product product) {
+        if(dto.getDiscountId() != null){
+            Discount discount = getDiscountById(dto.getDiscountId());
+            product.setDiscount(discount);
+        }
+    }
+
     public List<ProductDTO> searchByWord(String word) {
         validateWord(word);
         List<Product> products = productRepository.findAllByNameContainingIgnoreCase(word.strip());
@@ -204,17 +211,21 @@ public class ProductService extends AbstractService{
 
     }
 
-//    public List<ProductDTO> findAllByCategoryId(long category, boolean sortByPrice, boolean desc) {
-//        Sort sort = null;
-//        if (sortByPrice) {
-//            sort = Sort.by("regularPrice");
-//            if (desc) {
-//                sort = sort.descending();
-//            }
-//        }
-//        return productRepository.findAllByCategoryId(category, sort).
-//                stream().map(p-> modelMapper.map(p, ProductDTO.class)).
-//                collect(Collectors.toList());
-//        //todo pages
-//    }
+    public List<ProductDTO> findAll(boolean sortByPrice, boolean desc) {
+        Sort sort = null;
+        if (sortByPrice) {
+            sort = Sort.by("regularPrice");
+            if (desc) {
+                sort = sort.descending();
+            }
+        }
+        if(sort == null){
+            return productRepository.findAll().stream().map
+                    (p-> modelMapper.map(p, ProductDTO.class)).collect(Collectors.toList());
+        }
+        return productRepository.findAll(sort).
+                stream().map(p-> modelMapper.map(p, ProductDTO.class)).
+                collect(Collectors.toList());
+        //todo pages
+    }
 }

@@ -80,11 +80,11 @@ public class ProductController extends AbstractController{
         return productService.searchByWord(word);
     }
 
-    @GetMapping("products")
-    public List<ProductDTO> getAllProducts(){
-        return productService.getAllProducts();
-    }
-    //todo testing remove feature
+//    @GetMapping("products")
+//    public List<ProductDTO> getAllProducts(){
+//        return productService.getAllProducts();
+//    }
+
     @DeleteMapping("products/{pid}/features/{fid}")
     public ProductFeatureDTO removeFeatureOfProduct(@PathVariable int pid, @PathVariable int fid){
         //todo check if admin
@@ -92,14 +92,13 @@ public class ProductController extends AbstractController{
     }
 
 
-//    @GetMapping("/products")
-//    public List<ProductDTO> getAllProductsByCategory(@RequestParam long category,
-//                                        @RequestParam(required = false) boolean sortByPrice,
-//                                        @RequestParam(required = false) boolean desc) {
-//
-//        return productService.findAllByCategoryId(category, sortByPrice, desc);
-//    }
+    @GetMapping("/products")
+    public List<ProductDTO> getAllProducts(@RequestParam(required = false) boolean sortByPrice,
+                                           @RequestParam(required = false) boolean desc) {
 
-    //
+        return productService.findAll(sortByPrice, desc);
+    }
+
+
 
 }

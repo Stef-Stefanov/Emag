@@ -12,7 +12,7 @@ import java.util.List;
 @Repository
 public interface ProductRepository extends JpaRepository<Product,Long> {
 
-    List<Product> findAllByCategoryId(long categoryId, Sort sort);
+    List<Product> findAll(Sort sort);
     List<Product> findAllByNameContainingIgnoreCase(String word);
 
 }
