@@ -22,9 +22,9 @@ public class User {
     private String password;
     @Column
     private String createdAt;
-    @Column
+    @Column(name = "is_subscribed")
     private boolean isSubscribed;
-    @Column
+    @Column(name = "is_admin")
     private boolean isAdmin;
     @Column
     private String phoneNumber;

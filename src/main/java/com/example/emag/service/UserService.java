@@ -6,6 +6,7 @@ import com.example.emag.model.dto.user.UserWithoutPassDTO;
 import com.example.emag.model.entities.User;
 import com.example.emag.model.exceptions.BadRequestException;
 import com.example.emag.model.exceptions.UnauthorizedException;
+import com.example.emag.model.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,8 +22,10 @@ public class UserService extends AbstractService{
         }
         //validate if exists and if format is suitable
         User u = modelMapper.map(dto, User.class);
+        System.out.println(u.isAdmin()); // todo delete
         userRepository.save(u);
-        return modelMapper.map(u, RegisterDTO.class);
+        System.out.println(dto.isAdmin()); // todo delete
+        return dto;
     }
 
 
@@ -38,10 +41,10 @@ public class UserService extends AbstractService{
             if (password.equals(u.getPassword())){
                 return modelMapper.map(u, UserWithoutPassDTO.class);
             }
-            throw new UnauthorizedException("Wrong credentials!");
+            throw new UnauthorizedException("Wrong credentials!  A");
         }
         else{
-            throw new UnauthorizedException("Wrong credentials!");
+            throw new UnauthorizedException("Wrong credentials!  B");
         }
     }
 
@@ -54,5 +57,16 @@ public class UserService extends AbstractService{
     }
     private boolean validatePassword(String username){
         return true;
+    }
+
+    public LoginDTO checkForUser(RegisterDTO dto) {
+        Optional<User> result = userRepository.findByEmail(dto.getEmail());
+        if (result.isPresent()) {
+            throw new BadRequestException("Email is taken");
+
+        } else {
+            return modelMapper.map(dto,LoginDTO.class);
+        }
+
     }
 }
