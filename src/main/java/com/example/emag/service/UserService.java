@@ -22,9 +22,7 @@ public class UserService extends AbstractService{
         }
         //validate if exists and if format is suitable
         User u = modelMapper.map(dto, User.class);
-        System.out.println(u.isAdmin()); // todo delete
         userRepository.save(u);
-        System.out.println(dto.isAdmin()); // todo delete
         return dto;
     }
 

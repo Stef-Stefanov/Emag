@@ -19,7 +19,6 @@ public class UserController extends AbstractController{
     @PostMapping("/users")
     // receive DTO, send to User Service, deserialize in UserService, map to entity, register, send back 200 ok.
     public RegisterDTO registerUser(@RequestBody RegisterDTO dto, HttpServletRequest req){
-        System.out.println(dto.isAdmin()); // todo delete
 //        LoginDTO loginDTO = userService.checkForUser(dto);
 //        UserWithoutPassDTO result = userService.login(loginDTO);
 //        logUser(req, result.getId());
