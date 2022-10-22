@@ -4,6 +4,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "discounts")
@@ -19,5 +20,7 @@ public class Discount {
     private LocalDateTime startDate;
     @Column
     private LocalDateTime expireDate;
+    @OneToMany(mappedBy = "discount")
+    private List<Product> discountProducts;
 
 }

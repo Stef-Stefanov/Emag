@@ -27,13 +27,14 @@ public class Product {
     private double regularPrice;
     @Column
     private int quantity;
-    @ManyToOne()
+    @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
-    @Column
-    private Long discountId;
     @ManyToMany(mappedBy = "likedProducts")
     private List<User> likes;
+    @ManyToOne
+    @JoinColumn(name = "discount_id")
+    private Discount discount;
     @OneToMany(mappedBy = "product")
     private List<UserProductsInCart> productsInCart;
     @OneToMany(mappedBy = "productId")

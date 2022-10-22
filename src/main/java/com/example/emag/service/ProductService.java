@@ -48,6 +48,10 @@ public class ProductService extends AbstractService{
         product.setRegularPrice(p.getRegularPrice());
         product.setQuantity(p.getQuantity());
         product.setCategory(category);
+        if(p.getDiscountId() != null){
+            Discount discount = getDiscountById(p.getDiscountId());
+            product.setDiscount(discount);
+        }
         return modelMapper.map(productRepository.save(product), ProductDTO.class);
     }
 
@@ -79,7 +83,7 @@ public class ProductService extends AbstractService{
         return productsInCart.getQuantity();
     }
 
-    public String addPicture(MultipartFile file, long pid) {
+    public String addImage(MultipartFile file, long pid) {
         Product product = getProductById(pid);
         String extension = FilenameUtils.getExtension(file.getOriginalFilename());
         String name = "uploads" + File.separator + System.nanoTime() + "." + extension;

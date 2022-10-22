@@ -38,14 +38,14 @@ public class ProductController extends AbstractController{
 
     @PostMapping("/products/{pid}/cart")
     public int addProductInCart(@PathVariable int pid, HttpServletRequest req, @RequestParam int quantity){
-        //todo check if logged?
+        //todo check if logged
         int uid = getLoggedUserId(req);
         return productService.addToCart(pid, uid, quantity);
     }
 
     @DeleteMapping("/products/{pid}/cart")
     public int removeProductFromCart(@PathVariable int pid, HttpServletRequest req){
-        //todo check if logged?
+        //todo check if logged
         int uid = getLoggedUserId(req);
         return productService.removeProductFromCart(pid,uid);
     }
@@ -53,7 +53,7 @@ public class ProductController extends AbstractController{
     @PostMapping("/products/{pid}/image")
     public String addPicture(@RequestParam MultipartFile file, @PathVariable long pid){
         //todo check if admin
-        return productService.addPicture(file,pid);
+        return productService.addImage(file,pid);
     }
 
     @PostMapping("products/{pid}")
@@ -90,6 +90,7 @@ public class ProductController extends AbstractController{
         //todo check if admin
         return productService.deleteFeature(pid, fid);
     }
+
 
 //    @GetMapping("/products")
 //    public List<ProductDTO> getAllProductsByCategory(@RequestParam long category,
