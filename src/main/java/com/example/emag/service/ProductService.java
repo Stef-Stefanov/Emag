@@ -32,7 +32,7 @@ public class ProductService extends AbstractService{
 
     public ProductDTO add(ProductAddDTO dto) {
         validateProduct(dto);
-        Category category = getCategoryById(dto);
+        Category category = getCategoryById(dto.getCategoryId());
         Product product = new Product();
         checkIfDiscountExist(dto, product);
         product.setName(dto.getName());
@@ -102,7 +102,7 @@ public class ProductService extends AbstractService{
     }
 
     private ProductDTO setProductProperties(ProductAddDTO dto, Product p) {
-        Category category = getCategoryById(dto);
+        Category category = getCategoryById(dto.getCategoryId());
         p.setCategory(category);
         p.setName(dto.getName());
         p.setDescription(dto.getDescription());

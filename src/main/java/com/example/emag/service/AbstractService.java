@@ -33,9 +33,8 @@ public abstract class AbstractService {
 //        return productRepository.findById(id).orElseThrow(() -> new NotFoundException("Product not found"));
 //    }
 
-    protected Category getCategoryById(ProductAddDTO p) {
-        return categoryRepository.findById(p.getCategoryId()).orElseThrow
-                (() -> new NotFoundException("Category not found"));
+    protected Category getCategoryById(long id) {
+        return categoryRepository.findById(id).orElseThrow(() -> new NotFoundException("Category not found"));
     }
 
     protected User getUserById(long id){
