@@ -41,6 +41,8 @@ public class Product {
     private List<ProductImage> productImages;
     @OneToMany(mappedBy = "product")
     private List<ProductFeature> productFeatures;
+    @OneToMany(mappedBy = "product")
+    private List<Review> reviews;
 
 
 }

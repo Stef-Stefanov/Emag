@@ -39,5 +39,6 @@ public class User {
     private List<Product> likedProducts;
     @OneToMany(mappedBy = "user")
     private List<UserProductsInCart> productsInCart;
-
+    @OneToMany(mappedBy = "user")
+    private List<Review> reviews;
 }
