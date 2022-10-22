@@ -1,19 +1,13 @@
 package com.example.emag.model.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
 @Table(name = "users")
-@Setter
-@Getter
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,14 +22,16 @@ public class User {
     private String password;
     @Column
     private String createdAt;
-    @Column
-    private int isSubscribed;
-    @Column
-    private int isAdmin;
+    @Column(name = "is_subscribed")
+    private boolean isSubscribed;
+    @Column(name = "is_admin")
+    private boolean isAdmin;
     @Column
     private String phoneNumber;
     @Column
     private String birthDate;
+
+
     @ManyToMany
     @JoinTable(name = "users_like_products",
     joinColumns = @JoinColumn(name = "user_id"),
