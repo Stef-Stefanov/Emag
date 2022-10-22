@@ -1,27 +1,19 @@
 package com.example.emag.service;
 
-import com.example.emag.model.dto.FeatureDTO;
 import com.example.emag.model.dto.product.*;
 import com.example.emag.model.entities.*;
 import com.example.emag.model.exceptions.BadRequestException;
 import com.example.emag.model.exceptions.NotFoundException;
 import org.apache.commons.io.FilenameUtils;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.awt.print.Pageable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static java.lang.Math.toIntExact;
 
 @Service
 public class ProductService extends AbstractService{
@@ -106,6 +98,10 @@ public class ProductService extends AbstractService{
         Product p = getProductById(pid);
         validateProduct(dto);
         checkIfDiscountExist(dto, p);
+        return setProductProperties(dto, p);
+    }
+
+    private ProductDTO setProductProperties(ProductAddDTO dto, Product p) {
         Category category = getCategoryById(dto);
         p.setCategory(category);
         p.setName(dto.getName());
@@ -165,10 +161,12 @@ public class ProductService extends AbstractService{
     }
 
     private void checkIfDiscountExist(ProductAddDTO dto, Product product) {
+        System.out.println(dto.getDiscountId());
         if(dto.getDiscountId() != null){
             Discount discount = getDiscountById(dto.getDiscountId());
             product.setDiscount(discount);
         }
+        //todo after discount expires UPDATE products SET discount_id = NULL WHERE  id = (product_id);
     }
 
     public List<ProductDTO> searchByWord(String word) {
@@ -186,10 +184,6 @@ public class ProductService extends AbstractService{
         if(word.length() < 2){
             throw new BadRequestException("Invalid word, must enter 2 characters at least");
         }
-    }
-
-    public List<ProductDTO> getAllProducts() {
-        return productRepository.findAll().stream().map(p -> modelMapper.map(p, ProductDTO.class)).collect(Collectors.toList());
     }
 
     public ProductFeatureDTO deleteFeature(long pid, long fid) {
@@ -227,5 +221,17 @@ public class ProductService extends AbstractService{
                 stream().map(p-> modelMapper.map(p, ProductDTO.class)).
                 collect(Collectors.toList());
         //todo pages
+    }
+
+    public ProductDTO editDiscount(long id, ProductAddDTO dto) {
+        Product p = getProductById(id);
+        validateProduct(dto);
+        if(dto.getDiscountId() == null){
+            p.setDiscount(null);
+        }else {
+            Discount discount = getDiscountById(dto.getDiscountId());
+            p.setDiscount(discount);
+        }
+        return setProductProperties(dto, p);
     }
 }

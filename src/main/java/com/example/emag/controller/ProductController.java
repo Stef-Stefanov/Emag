@@ -56,7 +56,7 @@ public class ProductController extends AbstractController{
         return productService.addImage(file,pid);
     }
 
-    @PostMapping("products/{pid}")
+    @PutMapping("products/{pid}")
     public ProductDTO editProduct(@PathVariable long pid,@RequestBody ProductAddDTO dto){
         //todo check if admin
         return productService.edit(pid, dto);
@@ -80,10 +80,6 @@ public class ProductController extends AbstractController{
         return productService.searchByWord(word);
     }
 
-//    @GetMapping("products")
-//    public List<ProductDTO> getAllProducts(){
-//        return productService.getAllProducts();
-//    }
 
     @DeleteMapping("products/{pid}/features/{fid}")
     public ProductFeatureDTO removeFeatureOfProduct(@PathVariable int pid, @PathVariable int fid){
@@ -92,13 +88,17 @@ public class ProductController extends AbstractController{
     }
 
 
-    @GetMapping("/products")
+    @GetMapping("products")
     public List<ProductDTO> getAllProducts(@RequestParam(required = false) boolean sortByPrice,
                                            @RequestParam(required = false) boolean desc) {
 
         return productService.findAll(sortByPrice, desc);
     }
 
-
+    @PutMapping("/products/{id}/discount")
+    public ProductDTO editProductDiscount(@PathVariable long id,@RequestBody ProductAddDTO dto) {
+        //todo check if admin
+        return productService.editDiscount(id, dto);
+    }
 
 }
