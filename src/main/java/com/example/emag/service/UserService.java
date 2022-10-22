@@ -6,7 +6,6 @@ import com.example.emag.model.dto.user.UserWithoutPassDTO;
 import com.example.emag.model.entities.User;
 import com.example.emag.model.exceptions.BadRequestException;
 import com.example.emag.model.exceptions.UnauthorizedException;
-import com.example.emag.model.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,21 +15,21 @@ import java.util.Optional;
 public class UserService extends AbstractService{
 
     @Transactional
-    public RegisterDTO registerUser(RegisterDTO dto) {
+    public User registerUser(RegisterDTO dto) {
         if(!dto.getPassword().equals(dto.getConfirmPassword())){
             throw new BadRequestException("Passwords mismatch!");
         }
         //validate if exists and if format is suitable
         User u = modelMapper.map(dto, User.class);
         userRepository.save(u);
-        return dto;
+        return u;
     }
 
 
     public UserWithoutPassDTO login(LoginDTO dto) {
         String email = dto.getEmail();
         String password = dto.getPassword();
-        if(!validateUsername(email) || !validatePassword(password)){
+        if(!validateEmail(email) || !validatePassword(password)){
             throw new BadRequestException("Wrong credentials");
         }
         Optional<User> user = userRepository.findByEmail(email);
@@ -50,13 +49,22 @@ public class UserService extends AbstractService{
         // TODO: 22.10.2022 г.
         return null;
     }
-    private boolean validateUsername(String username){
+    private boolean validateEmail(String email){
+        //todo
         return true;
     }
-    private boolean validatePassword(String username){
+    private boolean validatePassword(String password){
+        //todo
         return true;
     }
-
+    private boolean validateBirthDate(String password){
+        //todo
+        return true;
+    }
+    public void validate(RegisterDTO dto){
+        validatePassword(dto.getPassword());
+        validateEmail(dto.getEmail());
+    }
     public LoginDTO checkForUser(RegisterDTO dto) {
         Optional<User> result = userRepository.findByEmail(dto.getEmail());
         if (result.isPresent()) {
@@ -65,6 +73,5 @@ public class UserService extends AbstractService{
         } else {
             return modelMapper.map(dto,LoginDTO.class);
         }
-
     }
 }

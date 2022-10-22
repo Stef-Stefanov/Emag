@@ -3,6 +3,7 @@ package com.example.emag.controller;
 import com.example.emag.model.dto.user.LoginDTO;
 import com.example.emag.model.dto.user.RegisterDTO;
 import com.example.emag.model.dto.user.UserWithoutPassDTO;
+import com.example.emag.model.entities.User;
 import com.example.emag.model.exceptions.BadRequestException;
 import com.example.emag.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,13 +17,17 @@ public class UserController extends AbstractController{
     @Autowired
     private UserService userService;
 
+    // 1. receive DTO,
+    // 2.1 Prepare Login DTO 2.2 Check username and pass viability 2.3 Check availability
+    // 3.1 Register user 3.2 Login user
     @PostMapping("/users")
-    // receive DTO, send to User Service, deserialize in UserService, map to entity, register, send back 200 ok.
     public RegisterDTO registerUser(@RequestBody RegisterDTO dto, HttpServletRequest req){
-//        LoginDTO loginDTO = userService.checkForUser(dto);
-//        UserWithoutPassDTO result = userService.login(loginDTO);
-//        logUser(req, result.getId());
-        return userService.registerUser(dto);
+        LoginDTO loginDTO = userService.checkForUser(dto);
+        userService.validate(dto);
+        User result = userService.registerUser(dto);
+        userService.login(loginDTO);
+        logUser(req, result.getId());
+        return dto;
     }
 
     @PostMapping("/auth")
