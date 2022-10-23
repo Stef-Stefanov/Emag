@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class UserService extends AbstractService{
@@ -49,21 +51,48 @@ public class UserService extends AbstractService{
         // TODO: 22.10.2022 г.
         return null;
     }
+    //=======================================================
+    // Simple email validator. Doesn't work with numerical IP.
+    // Should implement RFC 5322 standard from http://emailregex.com/, but the provided regex has a known issue.
+    // todo
     private boolean validateEmail(String email){
-        //todo
+        Pattern pattern = Pattern.compile("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$");
+        Matcher matcher = pattern.matcher(email);
+        if (!matcher.find()) {
+            throw new BadRequestException("Email is not compliant");
+        }
         return true;
     }
+    //=======================================================
+    // The regex validates that a password contains at least one of each
+    // lowercase, uppercase, digit and special chars and is between 4 and 12 chars.
+    // The minimum is set at 4 to make testing easier.
     private boolean validatePassword(String password){
-        //todo
+        Pattern pattern = Pattern.compile("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{4,12}$");
+        Matcher matcher = pattern.matcher(password);
+        if (!matcher.find()) {
+            throw new BadRequestException("Password is not compliant." +
+                    " Must be between 4 and 12 chars containing one or more" +
+                    " lowercase, uppercase, digit and special chars!");
+        }
         return true;
     }
-    private boolean validateBirthDate(String password){
-        //todo
+    //=======================================================
+    // Validates correct birthdate. Accepts three mySQL accepted delimiters.
+    // Todo needs to implement correct date and time logic -> no 32 of month 13.
+    // Also year needs to be after 1723 as sql doesn't suport older years.
+    private boolean validateBirthDate(String string){
+        Pattern pattern = Pattern.compile("(?<y>[0-9]{4})([:\\-_])(?<m>[0-9]{2})\\2(?<d>[0-9]{2})");
+        Matcher matcher = pattern.matcher(string);
+        if (!matcher.find()) {
+            throw new BadRequestException("Date of birth is not compliant");
+        }
         return true;
     }
     public void validate(RegisterDTO dto){
         validatePassword(dto.getPassword());
         validateEmail(dto.getEmail());
+        validateBirthDate(dto.getBirthDate());
     }
     public LoginDTO checkForUser(RegisterDTO dto) {
         Optional<User> result = userRepository.findByEmail(dto.getEmail());
