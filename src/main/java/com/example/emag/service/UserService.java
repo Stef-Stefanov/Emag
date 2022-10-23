@@ -1,15 +1,14 @@
 package com.example.emag.service;
 
-import com.example.emag.model.dto.user.EditProfileDTO;
-import com.example.emag.model.dto.user.LoginDTO;
-import com.example.emag.model.dto.user.RegisterDTO;
-import com.example.emag.model.dto.user.UserWithoutPassDTO;
+import com.example.emag.model.dto.user.*;
 import com.example.emag.model.entities.User;
 import com.example.emag.model.exceptions.BadRequestException;
 import com.example.emag.model.exceptions.UnauthorizedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -28,7 +27,6 @@ public class UserService extends AbstractService{
         return u;
     }
 
-
     public UserWithoutPassDTO login(LoginDTO dto) {
         String email = dto.getEmail();
         String password = dto.getPassword();
@@ -46,11 +44,6 @@ public class UserService extends AbstractService{
         else{
             throw new UnauthorizedException("Wrong credentials!  B");
         }
-    }
-
-    public UserWithoutPassDTO getById(int uid) {
-        // TODO: 22.10.2022 г.
-        return null;
     }
     //=======================================================
     // Simple email validator. Doesn't work with numerical IP.
@@ -104,22 +97,46 @@ public class UserService extends AbstractService{
         validateEmail(dto.getEmail());
         validateBirthDate(dto.getBirthDate());
     }
-    public LoginDTO checkForUser(RegisterDTO dto) {
-        Optional<User> result = userRepository.findByEmail(dto.getEmail());
+    //=======================================================
+    // The next methods check if email is free to register with.
+    public void checkEmailAvailability(String email) {
+        Optional<User> result = userRepository.findByEmail(email);
         if (result.isPresent()) {
             throw new BadRequestException("Email is taken");
-
-        } else {
-            return modelMapper.map(dto,LoginDTO.class);
         }
     }
-    public LoginDTO checkForUser(EditProfileDTO dto) {
-        Optional<User> result = userRepository.findByEmail(dto.getEmail());
-        if (result.isPresent()) {
-            throw new BadRequestException("Email is taken");
 
-        } else {
-            return modelMapper.map(dto,LoginDTO.class);
+    public void deleteUser(HttpSession s) {
+        checkIfLogged(s);
+        userRepository.deleteById((long)s.getAttribute("USER_ID"));
+    }
+
+    private void checkIfLogged(HttpSession s){
+        if (s==null || s.isNew()){
+            s.setAttribute("LOGGED",false);
+            throw new UnauthorizedException("You are not logged in! A");
         }
+        if (!(boolean) s.getAttribute("LOGGED")){
+            throw new UnauthorizedException("You are not logged in! B");
+        }
+    }
+
+    public User registerUser(RegisterDTO dto, HttpServletRequest req){
+        checkEmailAvailability(dto.getEmail());
+        LoginDTO loginDTO = transformRegDtoIntoLoginDto(dto);
+        validate(dto);
+        User result = registerUserService(dto);
+        login(loginDTO);
+        return result;
+    }
+    private LoginDTO transformRegDtoIntoLoginDto(RegisterDTO rdto){
+        LoginDTO loginDTO = new LoginDTO();
+        loginDTO.setEmail(rdto.getEmail());
+        loginDTO.setPassword(rdto.getPassword());
+        return loginDTO;
+    }
+    public UserWithoutPassDTO getById(int uid) {
+        // TODO: 22.10.2022 г.
+        return null;
     }
 }

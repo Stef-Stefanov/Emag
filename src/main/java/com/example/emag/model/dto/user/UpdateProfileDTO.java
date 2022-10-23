@@ -3,7 +3,7 @@ package com.example.emag.model.dto.user;
 import lombok.Data;
 
 @Data
-public class EditProfileDTO {
+public class UpdateProfileDTO {
 
     private String email;
     private Long id;

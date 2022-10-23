@@ -1,8 +1,6 @@
 package com.example.emag.controller;
 
-import com.example.emag.model.dto.user.LoginDTO;
-import com.example.emag.model.dto.user.RegisterDTO;
-import com.example.emag.model.dto.user.UserWithoutPassDTO;
+import com.example.emag.model.dto.user.*;
 import com.example.emag.model.entities.User;
 import com.example.emag.model.exceptions.BadRequestException;
 import com.example.emag.model.exceptions.UnauthorizedException;
@@ -10,7 +8,6 @@ import com.example.emag.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.security.sasl.AuthenticationException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -24,14 +21,14 @@ public class UserController extends AbstractController{
     // 3.1 Register user 3.2 Login user
     @PostMapping("/users")
     public RegisterDTO registerUser(@RequestBody RegisterDTO dto, HttpServletRequest req){
-        LoginDTO loginDTO = userService.checkForUser(dto);
-        userService.validate(dto); //todo might pottentially move the validate inside the service.
-        User result = userService.registerUserService(dto);
-        userService.login(loginDTO);
+        User result = userService.registerUser(dto, req);
         logUser(req, result.getId());
         return dto;
     }
-
+    @DeleteMapping("/end")
+    public void deleteUser(LoginDTO dto, HttpSession s){
+        userService.deleteUser(s);
+    }
     @PostMapping("/auth")
     public UserWithoutPassDTO login(@RequestBody LoginDTO dto, HttpSession s, HttpServletRequest req){
         UserWithoutPassDTO result = userService.login(dto);
@@ -45,11 +42,6 @@ public class UserController extends AbstractController{
             throw new BadRequestException("Wrong Credentials");
         }
     }
-    /*
-        check if logged
-        if not logged - you have to be logged
-        if logged - log out
-     */
     @PutMapping("/exit")
     public void logout(HttpSession s) {
         if (s==null || s.isNew()){
@@ -61,8 +53,14 @@ public class UserController extends AbstractController{
         }
         s.setAttribute("LOGGED",false);
     }
-    @GetMapping("/users/{uid}")
-    public UserWithoutPassDTO getById(@PathVariable int uid){
-        return userService.getById(uid);
-    }
+
+//    @PutMapping("/update")
+//    public void updateUserDate(UpdateProfileDTO dto, HttpSession s){
+//        userService.updateData(dto, s);
+//    }
+//    @PutMapping("/secure")
+//    public void updateUserPass(ChangePassDTO dto, HttpSession s){
+//        userService.updatePass(dto, s);
+//    }
+
 }
