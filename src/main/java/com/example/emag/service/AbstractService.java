@@ -4,6 +4,7 @@ import com.example.emag.model.dto.product.ProductAddDTO;
 import com.example.emag.model.entities.*;
 import com.example.emag.model.exceptions.NotFoundException;
 import com.example.emag.model.repositories.*;
+import org.aspectj.weaver.ast.Not;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -57,6 +58,10 @@ public abstract class AbstractService {
 
     protected Review getReviewById(long id) {
         return reviewRepository.findById(id).orElseThrow(() -> new NotFoundException("Review not found"));
+    }
+
+    protected ProductImage getProductImageById(long id){
+        return productImageRepository.findById(id).orElseThrow(() -> new NotFoundException("Product image not found"));
     }
 
 }

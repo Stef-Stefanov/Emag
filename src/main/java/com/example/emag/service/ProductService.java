@@ -76,15 +76,21 @@ public class ProductService extends AbstractService{
 
     public String addImage(MultipartFile file, long pid) {
         Product product = getProductById(pid);
+        if(product.getProductImages().size() > 10){
+            throw new BadRequestException("Max images for products is 10");
+        }
         String extension = FilenameUtils.getExtension(file.getOriginalFilename());
         String name = "uploads" + File.separator + System.nanoTime() + "." + extension;
         File f = new File(name);
         if(!f.exists()){
             try {
-                Files.copy(file.getInputStream(),f.toPath());
+                Files.copy(file.getInputStream(), f.toPath());
             } catch (IOException e) {
-                throw new BadRequestException("File already exists");
+                throw new BadRequestException(e.getMessage());
             }
+        }
+        else{
+          throw new BadRequestException("File already exists");
         }
         ProductImage image = new ProductImage();
         image.setUrl(name);
@@ -233,5 +239,24 @@ public class ProductService extends AbstractService{
             p.setDiscount(discount);
         }
         return setProductProperties(dto, p);
+    }
+
+    public String deleteImage(long pid, long iid, String url) {
+        //check if this product has this picture
+        Product p = getProductById(pid);
+        ProductImage productImage = getProductImageById(iid);
+        File file = new File("uploads" + File.separator + url);
+        if(p.getProductImages().contains(productImage)){
+            try {
+                Files.delete(file.toPath());
+                productImageRepository.delete(productImage);
+            } catch (IOException e) {
+                throw new BadRequestException(e.getMessage());
+            }
+        }
+        else {
+            throw new BadRequestException("File does not exists");
+        }
+        return url;
     }
 }
