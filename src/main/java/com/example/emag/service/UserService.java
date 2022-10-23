@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 public class UserService extends AbstractService{
 
     @Transactional
-    public User registerUser(RegisterDTO dto) {
+    public User registerUserService(RegisterDTO dto) {
         if(!dto.getPassword().equals(dto.getConfirmPassword())){
             throw new BadRequestException("Passwords mismatch!");
         }
@@ -53,7 +53,8 @@ public class UserService extends AbstractService{
     }
     //=======================================================
     // Simple email validator. Doesn't work with numerical IP.
-    // Should implement RFC 5322 standard from http://emailregex.com/, but the provided regex has a known issue.
+    // Should implement RFC 5322 standard from http://emailregex.com/ at some point ,
+    // but the official standard regex has a known issue with Java.
     // todo
     private boolean validateEmail(String email){
         Pattern pattern = Pattern.compile("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$");
@@ -63,10 +64,12 @@ public class UserService extends AbstractService{
         }
         return true;
     }
-    //=======================================================
-    // The regex validates that a password contains at least one of each
-    // lowercase, uppercase, digit and special chars and is between 4 and 12 chars.
-    // The minimum is set at 4 to make testing easier.
+
+    /**=======================================================
+    * The regex validates that a password contains at least one of each
+    * lowercase, uppercase, digit and special chars and is between 4 and 12 chars.
+    * The minimum is set at 4 to make testing easier.
+    */
     private boolean validatePassword(String password){
         Pattern pattern = Pattern.compile("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{4,12}$");
         Matcher matcher = pattern.matcher(password);
@@ -77,10 +80,14 @@ public class UserService extends AbstractService{
         }
         return true;
     }
-    //=======================================================
-    // Validates correct birthdate. Accepts three mySQL accepted delimiters.
-    // Todo needs to implement correct date and time logic -> no 32 of month 13.
-    // Also year needs to be after 1723 as sql doesn't suport older years.
+
+    /**
+    * =======================================================
+    * Validates correct birthdate. Accepts three mySQL accepted delimiters.
+    * Todo needs to implement correct date and time logic -> no 32 of month 13.
+    * Also year needs to be after 1723 as sql doesn't suport older years.
+    *
+    */
     private boolean validateBirthDate(String string){
         Pattern pattern = Pattern.compile("(?<y>[0-9]{4})([:\\-_])(?<m>[0-9]{2})\\2(?<d>[0-9]{2})");
         Matcher matcher = pattern.matcher(string);
@@ -89,6 +96,8 @@ public class UserService extends AbstractService{
         }
         return true;
     }
+    //=======================================================
+    // A public master method that calls the different validation methods of a full set UserDTO.
     public void validate(RegisterDTO dto){
         validatePassword(dto.getPassword());
         validateEmail(dto.getEmail());

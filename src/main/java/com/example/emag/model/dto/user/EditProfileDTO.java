@@ -6,7 +6,6 @@ import lombok.Data;
 public class EditProfileDTO {
 
     private String email;
-    private String password;
     private Long id;
     private String firstName;
     private String lastName;
