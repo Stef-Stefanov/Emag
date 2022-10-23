@@ -31,6 +31,10 @@ public abstract class AbstractService {
     protected DiscountRepository discountRepository;
     @Autowired
     protected ReviewRepository reviewRepository;
+    @Autowired
+    protected OrderRepository orderRepository;
+    @Autowired
+    protected OrderProductRepository orderProductRepository;
 
 //    protected Product findProductById(long id) {
 //        return productRepository.findById(id).orElseThrow(() -> new NotFoundException("Product not found"));
