@@ -46,7 +46,7 @@ public class ProductService extends AbstractService{
 
 
 
-    public LikedProductsDTO like(int pid, int uid) {
+    public LikedProductsDTO like(long pid, long uid) {
         User u = getUserById(uid);
         Product p = getProductById(pid);
         if(u.getLikedProducts().contains(p)){

@@ -55,4 +55,8 @@ public abstract class AbstractService {
         return discountRepository.findById(id).orElseThrow(() -> new NotFoundException("Discount not found"));
     }
 
+    protected Review getReviewById(long id) {
+        return reviewRepository.findById(id).orElseThrow(() -> new NotFoundException("Review not found"));
+    }
+
 }

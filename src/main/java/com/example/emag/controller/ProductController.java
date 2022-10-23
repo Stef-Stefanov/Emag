@@ -32,21 +32,21 @@ public class ProductController extends AbstractController{
     @PostMapping("/products/{pid}/like")
     public LikedProductsDTO likeProduct(@PathVariable int pid, HttpServletRequest req){
         //todo check if logged
-        int uid = getLoggedUserId(req);
+         long uid = getLoggedUserId(req);
         return productService.like(pid,uid);
     }
 
     @PostMapping("/products/{pid}/cart")
     public int addProductInCart(@PathVariable int pid, HttpServletRequest req, @RequestParam int quantity){
         //todo check if logged
-        int uid = getLoggedUserId(req);
+        long uid = getLoggedUserId(req);
         return productService.addToCart(pid, uid, quantity);
     }
 
     @DeleteMapping("/products/{pid}/cart")
     public int removeProductFromCart(@PathVariable int pid, HttpServletRequest req){
         //todo check if logged
-        int uid = getLoggedUserId(req);
+        long uid = getLoggedUserId(req);
         return productService.removeProductFromCart(pid,uid);
     }
 

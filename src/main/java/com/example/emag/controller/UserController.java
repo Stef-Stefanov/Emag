@@ -31,11 +31,12 @@ public class UserController extends AbstractController{
     }
 
     @PostMapping("/auth")
-    public UserWithoutPassDTO login(@RequestBody LoginDTO dto, HttpSession s){
+    public UserWithoutPassDTO login(@RequestBody LoginDTO dto, HttpSession s, HttpServletRequest req){
         UserWithoutPassDTO result = userService.login(dto);
         if(result != null){
             s.setAttribute("LOGGED", true);
             s.setAttribute("USER_ID", result.getId());
+            s.setAttribute("REMOTE_IP", req.getRemoteAddr());
             return result;
         }
         else{
