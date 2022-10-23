@@ -1,5 +1,6 @@
 package com.example.emag.service;
 
+import com.example.emag.model.dto.user.EditProfileDTO;
 import com.example.emag.model.dto.user.LoginDTO;
 import com.example.emag.model.dto.user.RegisterDTO;
 import com.example.emag.model.dto.user.UserWithoutPassDTO;
@@ -104,6 +105,15 @@ public class UserService extends AbstractService{
         validateBirthDate(dto.getBirthDate());
     }
     public LoginDTO checkForUser(RegisterDTO dto) {
+        Optional<User> result = userRepository.findByEmail(dto.getEmail());
+        if (result.isPresent()) {
+            throw new BadRequestException("Email is taken");
+
+        } else {
+            return modelMapper.map(dto,LoginDTO.class);
+        }
+    }
+    public LoginDTO checkForUser(EditProfileDTO dto) {
         Optional<User> result = userRepository.findByEmail(dto.getEmail());
         if (result.isPresent()) {
             throw new BadRequestException("Email is taken");
