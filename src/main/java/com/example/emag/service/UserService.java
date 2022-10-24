@@ -195,6 +195,7 @@ public class UserService extends AbstractService{
         userRepository.save(u);
     }
     public void updatePass(ChangePassDTO dto, HttpSession s){
+        checkIfLogged(s);
         if (!dto.getNewPassword().equals(dto.getConfirmNewPassword())) {
             throw new BadRequestException("New password mismatch");
         }
@@ -207,8 +208,13 @@ public class UserService extends AbstractService{
         userRepository.save(u);
     }
 
-    public UserWithoutPassDTO getById(int uid) {
-        // TODO: 22.10.2022 г.
-        return null;
+    public UserWithoutPassDTO getById(Long uid) {
+        try {
+            User u = userRepository.findById(uid).orElseThrow();
+            UserWithoutPassDTO dto = modelMapper.map(u,UserWithoutPassDTO.class);
+            return dto;
+        } catch (RuntimeException e) {
+            throw new BadRequestException("No such user found");
+        }
     }
 }
