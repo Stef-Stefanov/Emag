@@ -56,7 +56,7 @@ public class UserController extends AbstractController{
 
     @PutMapping("/update")
     public void updateUserDate(@RequestBody UpdateProfileDTO dto, HttpSession s){
-        userService.updateData(dto, s);
+        userService.updateInfo(dto, s);
     }
     @PutMapping("/secure")
     public void updateUserPass(@RequestBody ChangePassDTO dto, HttpSession s){
