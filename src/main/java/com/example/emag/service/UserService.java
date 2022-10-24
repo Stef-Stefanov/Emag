@@ -4,6 +4,8 @@ import com.example.emag.model.dto.user.*;
 import com.example.emag.model.entities.User;
 import com.example.emag.model.exceptions.BadRequestException;
 import com.example.emag.model.exceptions.UnauthorizedException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,12 +13,12 @@ import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Service
 public class UserService extends AbstractService{
-    private static String adminPassword = "123";
     @Transactional
     public User registerUser(RegisterDTO dto, HttpSession s ){
         if (checkIfLoggedBoolean(s)){
@@ -221,9 +223,27 @@ public class UserService extends AbstractService{
             throw new UnauthorizedException("Wrong credentials! D");
         }
         //todo separate in method potentially
-        if (dto.getAdminPassword().equals(adminPassword)) {
-            u.setAdmin(dto.isAdmin());
-        }
+        if (! dto.getAdminPassword().equals(adminPassword)) {
+            System.out.println(dto.isAdmin()); //todo remove
+            throw new UnauthorizedException("Wrong credentials! Q");
+                    }
+        u.setAdmin(dto.isAdmin());
         userRepository.save(u);
+    }
+
+    public String lookUpAdminPassword(LoginDTO dto, HttpSession s) {
+        checkIfLogged(s);
+        //todo separate in method potentially
+        User u = userRepository.findById((long)s.getAttribute("USER_ID")).orElseThrow();
+        if (!dto.getPassword().equals(u.getPassword())
+                && !dto.getEmail().equals(u.getEmail())){
+            throw new UnauthorizedException("Wrong credentials! D");
+        }
+        //todo separate in method potentially
+        if (!u.isAdmin()){
+            throw new UnauthorizedException("You are not an administrator!");
+        }
+        //todo needs to be crypted with IP
+        return adminPassword;
     }
 }

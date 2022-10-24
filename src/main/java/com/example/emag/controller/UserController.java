@@ -66,4 +66,8 @@ public class UserController extends AbstractController{
     public void giveAdminPrivileges(@RequestBody AdminDTO dto, HttpSession s){
         userService.makeAdmin(dto, s);
     }
+    @PostMapping("/priv")
+    public String lookUpAdmin(@RequestBody LoginDTO dto, HttpSession s){
+        return userService.lookUpAdminPassword(dto,s);
+    }
 }

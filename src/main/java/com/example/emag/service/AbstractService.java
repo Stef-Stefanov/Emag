@@ -7,10 +7,23 @@ import com.example.emag.model.repositories.*;
 import org.aspectj.weaver.ast.Not;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+
+import java.util.Random;
 
 @Service
 public abstract class AbstractService {
+    protected static String adminPassword = "123";
+    @Async
+    @Scheduled(cron ="1 * * * * *",zone = "EET")
+    protected void changeAdminPasswordCronJob(){
+        // todo implement https://sourceforge.net/projects/trng-random-org/
+        adminPassword = String.valueOf(new Random().nextLong());
+        System.out.println("working cron job");
+        System.out.println(adminPassword);
+    }
     @Autowired
     protected ProductRepository productRepository;
     @Autowired
