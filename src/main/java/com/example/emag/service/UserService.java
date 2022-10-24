@@ -172,7 +172,11 @@ public class UserService extends AbstractService{
     public void updateData(UpdateProfileDTO dto, HttpSession s){
         // todo what if user doesn't exist?
         if (s.isNew()) {
+            s.setAttribute("LOGGED",false);
             throw new UnauthorizedException("You must be logged in! G");
+        }
+        if (!((boolean)s.getAttribute("LOGGED"))) {
+            throw new UnauthorizedException("You must be logged in! GG");
         }
         User u = userRepository.findById((long)s.getAttribute("USER_ID")).orElseThrow();
         byte counter = 0;
