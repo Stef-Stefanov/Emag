@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -47,6 +48,21 @@ public class UserService extends AbstractService{
         else{
             throw new UnauthorizedException("Wrong credentials!  B");
         }
+    }
+
+    private boolean matchEmailToSessionUserID(String email, HttpSession session){
+        if (null != session.getAttribute("USER_ID")) {
+            boolean result = false;
+            try {
+                result = email
+                        .equals(userRepository
+                                .findById((long)session.getAttribute("USER_ID")).orElseThrow().getEmail());
+            } catch (NoSuchElementException e) {
+                throw new UnauthorizedException("Wrong credentials! T");
+            }
+            return result;
+        }
+        return false;
     }
     /**
      =======================================================
@@ -112,8 +128,10 @@ public class UserService extends AbstractService{
         }
     }
 
-    public void deleteUser(HttpSession s) {
+    public void deleteUser(LoginDTO dto, HttpSession s) {
         checkIfLogged(s);
+        boolean b = matchEmailToSessionUserID(dto.getEmail(), s);
+        login(dto);
         userRepository.deleteById((long)s.getAttribute("USER_ID"));
         s.invalidate();
     }

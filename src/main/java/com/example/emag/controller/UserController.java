@@ -30,7 +30,7 @@ public class UserController extends AbstractController{
     }
     @DeleteMapping("/end")
     public void deleteUser(@RequestBody LoginDTO dto, HttpServletRequest req){
-        userService.deleteUser(req.getSession());
+        userService.deleteUser(dto, req.getSession());
     }
     @PostMapping("/auth")
     public UserWithoutPassDTO login(@RequestBody LoginDTO dto, HttpSession s, HttpServletRequest req){
