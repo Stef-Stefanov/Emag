@@ -16,9 +16,6 @@ public class UserController extends AbstractController{
     @Autowired
     private UserService userService;
 
-    // 1. receive DTO,
-    // 2.1 Prepare Login DTO 2.2 Check username and pass viability 2.3 Check availability
-    // 3.1 Register user 3.2 Login user
     @PostMapping("/users")
     public RegisterDTO registerUser(@RequestBody RegisterDTO dto, HttpServletRequest req){
         if (userService.checkIfLoggedBoolean(req.getSession())){
@@ -60,12 +57,12 @@ public class UserController extends AbstractController{
         s.setAttribute("LOGGED",false);
     }
 
-//    @PutMapping("/update")
-//    public void updateUserDate(UpdateProfileDTO dto, HttpSession s){
-//        userService.updateData(dto, s);
-//    }
+    @PutMapping("/update")
+    public void updateUserDate(@RequestBody UpdateProfileDTO dto, HttpSession s){
+        userService.updateData(dto, s);
+    }
 //    @PutMapping("/secure")
-//    public void updateUserPass(ChangePassDTO dto, HttpSession s){
+//    public void updateUserPass(@RequestBody ChangePassDTO dto, HttpSession s){
 //        userService.updatePass(dto, s);
 //    }
 

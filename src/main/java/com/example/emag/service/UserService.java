@@ -137,7 +137,7 @@ public class UserService extends AbstractService{
     }
 
     private boolean checkIfLogged(HttpSession s){
-        if (s==null || s.isNew()){
+        if (s.isNew()){
             s.setAttribute("LOGGED",false);
             throw new UnauthorizedException("You are not logged in! A");
         }
@@ -168,6 +168,47 @@ public class UserService extends AbstractService{
         loginDTO.setPassword(rdto.getPassword());
         return loginDTO;
     }
+
+    public void updateData(UpdateProfileDTO dto, HttpSession s){
+        // todo what if user doesn't exist?
+        if (s.isNew()) {
+            throw new UnauthorizedException("You must be logged in! G");
+        }
+        User u = userRepository.findById((long)s.getAttribute("USER_ID")).orElseThrow();
+        byte counter = 0;
+        if (!dto.getEmail().equals(u.getEmail())) {
+            checkEmailAvailability(dto.getEmail());
+            validateEmail(dto.getEmail());
+            u.setEmail(dto.getEmail());
+            counter++;
+        }
+        if (!dto.getFirstName().equals(u.getFirstName())) {
+            u.setFirstName(dto.getFirstName());
+            counter++;
+        }
+        if (!dto.getLastName().equals(u.getLastName())){
+            u.setLastName(dto.getLastName());
+            counter++;
+        }
+        if (dto.isSubscribed()!=u.isSubscribed()){
+            u.setSubscribed(dto.isSubscribed());
+            counter++;
+        }
+        if (!dto.getPhoneNumber().equals(u.getPhoneNumber())) {
+            u.setPhoneNumber(dto.getPhoneNumber());
+            counter++;
+        }
+        if (!dto.getBirthDate().equals(u.getBirthDate())) {
+            validateBirthDate(dto.getBirthDate());
+            u.setBirthDate(dto.getBirthDate());
+            counter++;
+        }
+        if (counter==0){
+            throw  new BadRequestException("No changes were made!");
+        }
+        userRepository.save(u);
+    }
+
     public UserWithoutPassDTO getById(int uid) {
         // TODO: 22.10.2022 г.
         return null;
