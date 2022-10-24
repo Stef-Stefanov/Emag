@@ -62,5 +62,8 @@ public class UserController extends AbstractController{
     public void updateUserPass(@RequestBody ChangePassDTO dto, HttpSession s){
         userService.updatePass(dto, s);
     }
-
+    @PutMapping("/upgrade")
+    public void giveAdminPrivileges(@RequestBody AdminDTO dto, HttpSession s){
+        userService.makeAdmin(dto, s);
+    }
 }

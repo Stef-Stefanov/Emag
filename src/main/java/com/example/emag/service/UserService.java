@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 
 @Service
 public class UserService extends AbstractService{
-
+    private static String adminPassword = "123";
     @Transactional
     public User registerUser(RegisterDTO dto, HttpSession s ){
         if (checkIfLoggedBoolean(s)){
@@ -169,13 +169,7 @@ public class UserService extends AbstractService{
     public void updateInfo(UpdateProfileDTO dto, HttpSession s){
         // todo what if user doesn't exist? -> GoneException
         // todo fix when no changes -> throw exc
-        if (s.isNew()) {
-            s.setAttribute("LOGGED",false);
-            throw new UnauthorizedException("You must be logged in! G");
-        }
-        if (!((boolean)s.getAttribute("LOGGED"))) {
-            throw new UnauthorizedException("You must be logged in! GG");
-        }
+        checkIfLogged(s);
         User u = userRepository.findById((long)s.getAttribute("USER_ID")).orElseThrow();
         if (!dto.getEmail().equals(u.getEmail())) {
             checkEmailAvailability(dto.getEmail());
@@ -200,10 +194,12 @@ public class UserService extends AbstractService{
             throw new BadRequestException("New password mismatch");
         }
         validatePassword(dto.getNewPassword());
+        //todo seperate in method potentailly
         User u = userRepository.findById((long)s.getAttribute("USER_ID")).orElseThrow();
         if (!dto.getPassword().equals(u.getPassword())){
             throw new UnauthorizedException("Wrong credentials! D");
         }
+        //todo seperate in method potentailly
         u.setPassword(dto.getNewPassword());
         userRepository.save(u);
     }
@@ -216,5 +212,18 @@ public class UserService extends AbstractService{
         } catch (RuntimeException e) {
             throw new BadRequestException("No such user found");
         }
+    }
+    public void makeAdmin(AdminDTO dto, HttpSession s){
+        checkIfLogged(s);
+        //todo separate in method potentially
+        User u = userRepository.findById((long)s.getAttribute("USER_ID")).orElseThrow();
+        if (!dto.getPassword().equals(u.getPassword())){
+            throw new UnauthorizedException("Wrong credentials! D");
+        }
+        //todo separate in method potentially
+        if (dto.getAdminPassword().equals(adminPassword)) {
+            u.setAdmin(dto.isAdmin());
+        }
+        userRepository.save(u);
     }
 }
