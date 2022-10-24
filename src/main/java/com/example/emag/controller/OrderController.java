@@ -1,5 +1,6 @@
 package com.example.emag.controller;
 
+import com.example.emag.model.dto.order.MadeOrderDTO;
 import com.example.emag.model.entities.Order;
 import com.example.emag.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,7 @@ public class OrderController extends AbstractController{
     private OrderService orderService;
 
     @PostMapping("orders/{uid}")
-    public double makeOrder(@PathVariable long uid){
+    public MadeOrderDTO makeOrder(@PathVariable long uid){
         return orderService.makeOrder(uid);
     }
 }
