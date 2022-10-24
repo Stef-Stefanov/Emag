@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.time.LocalDateTime;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -32,6 +33,9 @@ public class UserService extends AbstractService{
         LoginDTO loginDTO = transformRegDtoIntoLoginDto(dto);
         validate(dto);
         User result = modelMapper.map(dto, User.class);
+        result.setSubscribed(true);
+        result.setAdmin(false);
+        result.setCreatedAt(LocalDateTime.now());
         userRepository.save(result);
         login(loginDTO);
         return result;

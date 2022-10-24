@@ -3,6 +3,7 @@ package com.example.emag.model.entities;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -21,7 +22,7 @@ public class User {
     @Column
     private String password;
     @Column
-    private String createdAt;
+    private LocalDateTime createdAt;
     @Column(name = "is_subscribed")
     private boolean isSubscribed;
     @Column(name = "is_admin")

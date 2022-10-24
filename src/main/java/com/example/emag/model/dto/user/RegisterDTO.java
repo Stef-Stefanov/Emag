@@ -15,20 +15,6 @@ public class RegisterDTO {
     private String firstName;
     @NotNull
     private String lastName;
-    private String createdAt;
-
-    /*
-     =====================================
-     Must be annotated with @JsonProperty
-     so that Jackson uses the field name
-     to determine the property name
-     =====================================
-     */
-    @JsonProperty
-    private boolean isSubscribed;
-    @JsonProperty
-    private boolean isAdmin;
-
     private String phoneNumber;
     private String birthDate;
 
