@@ -60,7 +60,7 @@ public abstract class AbstractController {
         if(session.getAttribute(LOGGED) == null ||
                 (!(boolean) session.getAttribute(LOGGED)) ||
                 !session.getAttribute(REMOTE_IP).equals(ip)){
-            throw new UnauthorizedException("You have to login!");
+            throw new UnauthorizedException("You have to login! C");
         }
         return (long) session.getAttribute(USER_ID);
     }

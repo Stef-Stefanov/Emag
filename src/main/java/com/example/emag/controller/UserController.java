@@ -21,16 +21,22 @@ public class UserController extends AbstractController{
     // 3.1 Register user 3.2 Login user
     @PostMapping("/users")
     public RegisterDTO registerUser(@RequestBody RegisterDTO dto, HttpServletRequest req){
-        User result = userService.registerUser(dto, req);
+        if (userService.checkIfLoggedBoolean(req.getSession())){
+            throw new BadRequestException("You are already logged in");
+        }
+        User result = userService.registerUser(dto);
         logUser(req, result.getId());
         return dto;
     }
     @DeleteMapping("/end")
-    public void deleteUser(LoginDTO dto, HttpSession s){
-        userService.deleteUser(s);
+    public void deleteUser(@RequestBody LoginDTO dto, HttpServletRequest req){
+        userService.deleteUser(req.getSession());
     }
     @PostMapping("/auth")
     public UserWithoutPassDTO login(@RequestBody LoginDTO dto, HttpSession s, HttpServletRequest req){
+        if (userService.checkIfLoggedBoolean(s)){
+            throw new BadRequestException("You are already logged in!");
+        }
         UserWithoutPassDTO result = userService.login(dto);
         if(result != null){
             s.setAttribute("LOGGED", true);
