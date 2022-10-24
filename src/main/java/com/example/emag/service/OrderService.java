@@ -1,76 +1,105 @@
 package com.example.emag.service;
 
+import com.example.emag.model.dto.order.MadeOrderDTO;
+import com.example.emag.model.dto.order.ProductOrderDTO;
 import com.example.emag.model.entities.*;
 import com.example.emag.model.exceptions.BadRequestException;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderService extends AbstractService{
-    public double makeOrder(long uid) {
+    @Transactional 
+    public MadeOrderDTO makeOrder(long uid) {
         User user = getUserById(uid);
-        OrderProductKey pk = new OrderProductKey();
         Order order = new Order();
-        OrderProduct orderProduct = new OrderProduct();
-        order.setUserId(user.getId());
-        order.setCreatedAt(LocalDateTime.now());
         double totalPrice = 0;
         if(user.getProductsInCart().size() == 0){
             throw new BadRequestException("Cart is empty");
         }
-        else{
-            List<UserProductsInCart> productList = user.getProductsInCart();
-            System.out.println(productList.size());
-            for (UserProductsInCart productsInCart : productList) {
-                // get every product check if current quantity is enough for order
-                // check price of every product if there is discount
-                // add price of every product to total amount
-                // clear cart - make order
-                // update quantity of products
-                // save order in history
-                //todo fix return type to dto
-                Product product = productsInCart.getProduct();
-                System.out.println(product.getName());
-                int quantityOfCurrentProductInCart = productsInCart.getQuantity();
-                int totalQuantityInShop = product.getQuantity();
-                if(quantityOfCurrentProductInCart > totalQuantityInShop){
-                    throw new BadRequestException("Not enough quantity of " + product.getName() +
-                            " product only " + product.getQuantity() + " has left");
-                }
-                product.setQuantity(totalQuantityInShop - quantityOfCurrentProductInCart);
-                orderRepository.save(order);
-                productRepository.save(product);
-                orderProduct.setOrder(order);
-                orderProduct.setProduct(product);
-                orderProduct.setId(pk);
-                pk.setOrderId(order.getId());
-                pk.setProductId(product.getId());
-                orderProduct.setQuantity(quantityOfCurrentProductInCart);
-                orderProductRepository.save(orderProduct);
-                userCartRepository.delete(productsInCart);
-                double regularPrice = product.getRegularPrice();
-                Discount discount = product.getDiscount();
-                if(discount != null ){
-                    double percentageDiscount = discount.getDiscountPercentage();
-                    double discountNumber = percentageDiscount / 100;
-                    System.out.println(discountNumber);
-                    double discountedPrice = (1 - discountNumber)* regularPrice;
-                    System.out.println("Discount price is " +discountedPrice);
-                    System.out.println("total price is " + totalPrice);
-                    totalPrice += discountedPrice * quantityOfCurrentProductInCart;
-                }
-                else{
-                    totalPrice += regularPrice * quantityOfCurrentProductInCart;
-                    System.out.println("total price in else is " + totalPrice);
+        List<UserProductsInCart> productsInCartList = user.getProductsInCart();
+        scanProductsInCartOneByOne(productsInCartList, order, totalPrice, user);
+        orderRepository.save(order);
+        return setMadeOrderDTO(user, order, productsInCartList);
+    }
+
+    private MadeOrderDTO setMadeOrderDTO(User user, Order order, List<UserProductsInCart> productsInCartList) {
+        MadeOrderDTO dto = new MadeOrderDTO();
+        dto.setFirstName(user.getFirstName());
+        dto.setTotalPrice(order.getPrice());
+        dto.setProducts(productsInCartList.stream().map(productsInCart ->
+                modelMapper.map(productsInCart.getProduct(), ProductOrderDTO.class)).collect(Collectors.toList()));
+        // мапваме имената на продуктите към дтото, но също мапваме и количеството, което е останало, а ние не искаме това
+        List<ProductOrderDTO> orderDTOList = dto.getProducts();
+        for (ProductOrderDTO entity : orderDTOList){
+            for(UserProductsInCart productsInCart : productsInCartList){
+                if(productsInCart.getProduct().getName().equals(entity.getName())){
+                    entity.setQuantity(productsInCart.getQuantity());
+                    // сетваме количеството на това, което е поръчано
                 }
             }
         }
-        order.setPrice(totalPrice);
-        orderRepository.save(order);
-        user.getProductsInCart().clear();
-        return totalPrice;
+        return dto;
+    }
+
+    private void scanProductsInCartOneByOne(List<UserProductsInCart> productList, Order order,
+                                            double totalPrice, User user){
+
+        for (UserProductsInCart currentProductInCart : productList) {
+            Product product = currentProductInCart.getProduct();
+            int leftQuantityInShop = checkIfQuantityIsEnough(product, currentProductInCart);
+            product.setQuantity(leftQuantityInShop);// сетваме новото количество
+            order.setPrice(order.getPrice() + sumTotalPrice(currentProductInCart, totalPrice));
+            order.setUserId(user.getId());
+            order.setCreatedAt(LocalDateTime.now());
+            orderProductsOneByOne(product, currentProductInCart, order);
+        }
+    }
+
+    private void orderProductsOneByOne(Product product, UserProductsInCart currentProductInCart,Order order) {
+        orderRepository.save(order); //даваме id на order
+        productRepository.save(product); // записваме продукта с новото количество в базата
+        OrderProduct orderProduct = new OrderProduct();// създаваме orderProduct с композитен ключ orderProductKey,
+        // което е един запис от таблицата orders_have_products
+        orderProduct.setOrder(order);// order_id
+        orderProduct.setProduct(product); // product_id
+        OrderProductKey pk = new OrderProductKey(); // прави се ключ така работи много към много с допълнителна колона
+        pk.setOrderId(order.getId());// order_id
+        pk.setProductId(product.getId());//product_id заедно са композитния ключ
+        orderProduct.setId(pk);// сетва се композитния ключ
+        orderProduct.setQuantity(currentProductInCart.getQuantity());// сетва се количеството поръчан продукт
+        orderProductRepository.save(orderProduct);// запазва се поръчкатата в базата данни
+        userCartRepository.delete(currentProductInCart);
+    }
+
+    private int checkIfQuantityIsEnough(Product product, UserProductsInCart currentProduct) {
+        int quantityOfCurrentProductInCart = currentProduct.getQuantity();
+        int totalQuantityInShop = product.getQuantity();
+        if (quantityOfCurrentProductInCart > totalQuantityInShop) {
+            throw new BadRequestException("Not enough quantity of " + product.getName() +
+                    " product only " + product.getQuantity() + " has left");
+        }
+        return totalQuantityInShop - quantityOfCurrentProductInCart;
+    }
+
+    private double sumTotalPrice(UserProductsInCart currentProductInCart, double totalPrice){
+        Product product = currentProductInCart.getProduct();
+        Discount discount = product.getDiscount();
+        int quantity = currentProductInCart.getQuantity();
+        double regularPrice = product.getRegularPrice();
+
+        if(discount != null ){
+            double percentageDiscount = discount.getDiscountPercentage();
+            double discountNumber = percentageDiscount / 100; // 20 / 100 -> 0.2
+            double discountedPrice = (1 - discountNumber) * regularPrice;
+            return totalPrice + (discountedPrice * quantity);
+        }
+        else{
+            return totalPrice + (regularPrice * quantity);
+        }
     }
 }
