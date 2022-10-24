@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -19,6 +20,9 @@ public class Order {
     private double price;
     @Column
     private LocalDateTime createdAt;
-//    @Column
-//    private long userId;
+    //todo fix this relation with user one to many
+    @Column
+    private long userId;
+    @OneToMany(mappedBy = "order")
+    private List<OrderProduct> productsInOrder;
 }
