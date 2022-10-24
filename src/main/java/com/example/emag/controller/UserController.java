@@ -18,10 +18,7 @@ public class UserController extends AbstractController{
 
     @PostMapping("/users")
     public RegisterDTO registerUser(@RequestBody RegisterDTO dto, HttpServletRequest req){
-        if (userService.checkIfLoggedBoolean(req.getSession())){
-            throw new BadRequestException("You are already logged in");
-        }
-        User result = userService.registerUser(dto);
+        User result = userService.registerUser(dto, req.getSession());
         logUser(req, result.getId());
         return dto;
     }
@@ -59,7 +56,7 @@ public class UserController extends AbstractController{
 
     @PutMapping("/update")
     public void updateUserDate(@RequestBody UpdateProfileDTO dto, HttpSession s){
-        userService.updateData(dto, s);
+        userService.updateInfo(dto, s);
     }
     @PutMapping("/secure")
     public void updateUserPass(@RequestBody ChangePassDTO dto, HttpSession s){

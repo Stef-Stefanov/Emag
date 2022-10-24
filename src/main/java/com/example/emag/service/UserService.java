@@ -6,12 +6,9 @@ import com.example.emag.model.exceptions.BadRequestException;
 import com.example.emag.model.exceptions.UnauthorizedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.Enumeration;
-import java.util.Iterator;
+import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -21,16 +18,24 @@ import java.util.regex.Pattern;
 public class UserService extends AbstractService{
 
     @Transactional
-    public User registerUserService(RegisterDTO dto) {
+    public User registerUser(RegisterDTO dto, HttpSession s ){
+        if (checkIfLoggedBoolean(s)){
+            throw new BadRequestException("You are already logged in");
+        }
         if(!dto.getPassword().equals(dto.getConfirmPassword())){
             throw new BadRequestException("Passwords mismatch!");
         }
-        //validate if exists and if format is suitable
-        User u = modelMapper.map(dto, User.class);
-        userRepository.save(u);
-        return u;
+        checkEmailAvailability(dto.getEmail());
+        LoginDTO loginDTO = transformRegDtoIntoLoginDto(dto);
+        validate(dto);
+        User result = modelMapper.map(dto, User.class);
+        result.setSubscribed(true);
+        result.setAdmin(false);
+        result.setCreatedAt(LocalDateTime.now());
+        userRepository.save(result);
+        login(loginDTO);
+        return result;
     }
-
     public UserWithoutPassDTO login(LoginDTO dto) {
         String email = dto.getEmail();
         String password = dto.getPassword();
@@ -154,14 +159,6 @@ public class UserService extends AbstractService{
         return (boolean) s.getAttribute("LOGGED");
     }
 
-    public User registerUser(RegisterDTO dto){
-        checkEmailAvailability(dto.getEmail());
-        LoginDTO loginDTO = transformRegDtoIntoLoginDto(dto);
-        validate(dto);
-        User result = registerUserService(dto);
-        login(loginDTO);
-        return result;
-    }
     private LoginDTO transformRegDtoIntoLoginDto(RegisterDTO rdto){
         LoginDTO loginDTO = new LoginDTO();
         loginDTO.setEmail(rdto.getEmail());
@@ -169,8 +166,9 @@ public class UserService extends AbstractService{
         return loginDTO;
     }
 
-    public void updateData(UpdateProfileDTO dto, HttpSession s){
-        // todo what if user doesn't exist?
+    public void updateInfo(UpdateProfileDTO dto, HttpSession s){
+        // todo what if user doesn't exist? -> GoneException
+        // todo fix when no changes -> throw exc
         if (s.isNew()) {
             s.setAttribute("LOGGED",false);
             throw new UnauthorizedException("You must be logged in! G");
@@ -179,37 +177,21 @@ public class UserService extends AbstractService{
             throw new UnauthorizedException("You must be logged in! GG");
         }
         User u = userRepository.findById((long)s.getAttribute("USER_ID")).orElseThrow();
-        byte counter = 0;
         if (!dto.getEmail().equals(u.getEmail())) {
             checkEmailAvailability(dto.getEmail());
             validateEmail(dto.getEmail());
             u.setEmail(dto.getEmail());
-            counter++;
-        }
-        if (!dto.getFirstName().equals(u.getFirstName())) {
-            u.setFirstName(dto.getFirstName());
-            counter++;
-        }
-        if (!dto.getLastName().equals(u.getLastName())){
-            u.setLastName(dto.getLastName());
-            counter++;
-        }
-        if (dto.isSubscribed()!=u.isSubscribed()){
-            u.setSubscribed(dto.isSubscribed());
-            counter++;
         }
         if (!dto.getPhoneNumber().equals(u.getPhoneNumber())) {
             u.setPhoneNumber(dto.getPhoneNumber());
-            counter++;
         }
         if (!dto.getBirthDate().equals(u.getBirthDate())) {
             validateBirthDate(dto.getBirthDate());
             u.setBirthDate(dto.getBirthDate());
-            counter++;
         }
-        if (counter==0){
-            throw  new BadRequestException("No changes were made!");
-        }
+        u.setFirstName(dto.getFirstName());
+        u.setLastName(dto.getLastName());
+        u.setSubscribed(dto.isSubscribed());
         userRepository.save(u);
     }
     public void updatePass(ChangePassDTO dto, HttpSession s){
