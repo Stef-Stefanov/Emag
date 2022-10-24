@@ -21,16 +21,21 @@ import java.util.regex.Pattern;
 public class UserService extends AbstractService{
 
     @Transactional
-    public User registerUserService(RegisterDTO dto) {
+    public User registerUser(RegisterDTO dto, HttpSession s ){
+        if (checkIfLoggedBoolean(s)){
+            throw new BadRequestException("You are already logged in");
+        }
         if(!dto.getPassword().equals(dto.getConfirmPassword())){
             throw new BadRequestException("Passwords mismatch!");
         }
-        //validate if exists and if format is suitable
-        User u = modelMapper.map(dto, User.class);
-        userRepository.save(u);
-        return u;
+        checkEmailAvailability(dto.getEmail());
+        LoginDTO loginDTO = transformRegDtoIntoLoginDto(dto);
+        validate(dto);
+        User result = modelMapper.map(dto, User.class);
+        userRepository.save(result);
+        login(loginDTO);
+        return result;
     }
-
     public UserWithoutPassDTO login(LoginDTO dto) {
         String email = dto.getEmail();
         String password = dto.getPassword();
@@ -154,14 +159,6 @@ public class UserService extends AbstractService{
         return (boolean) s.getAttribute("LOGGED");
     }
 
-    public User registerUser(RegisterDTO dto){
-        checkEmailAvailability(dto.getEmail());
-        LoginDTO loginDTO = transformRegDtoIntoLoginDto(dto);
-        validate(dto);
-        User result = registerUserService(dto);
-        login(loginDTO);
-        return result;
-    }
     private LoginDTO transformRegDtoIntoLoginDto(RegisterDTO rdto){
         LoginDTO loginDTO = new LoginDTO();
         loginDTO.setEmail(rdto.getEmail());
@@ -170,7 +167,8 @@ public class UserService extends AbstractService{
     }
 
     public void updateData(UpdateProfileDTO dto, HttpSession s){
-        // todo what if user doesn't exist?
+        // todo what if user doesn't exist? -> GoneException
+        // todo fix when no changes -> throw exc
         if (s.isNew()) {
             s.setAttribute("LOGGED",false);
             throw new UnauthorizedException("You must be logged in! G");

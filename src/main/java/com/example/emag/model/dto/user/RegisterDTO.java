@@ -18,11 +18,11 @@ public class RegisterDTO {
     private String createdAt;
 
     /*
-    ======================================
+     =====================================
      Must be annotated with @JsonProperty
      so that Jackson uses the field name
      to determine the property name
-     ======================================
+     =====================================
      */
     @JsonProperty
     private boolean isSubscribed;
