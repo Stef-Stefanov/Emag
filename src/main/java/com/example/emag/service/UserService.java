@@ -208,6 +208,18 @@ public class UserService extends AbstractService{
         }
         userRepository.save(u);
     }
+    public void updatePass(ChangePassDTO dto, HttpSession s){
+        if (!dto.getNewPassword().equals(dto.getConfirmNewPassword())) {
+            throw new BadRequestException("New password mismatch");
+        }
+        validatePassword(dto.getNewPassword());
+        User u = userRepository.findById((long)s.getAttribute("USER_ID")).orElseThrow();
+        if (!dto.getPassword().equals(u.getPassword())){
+            throw new UnauthorizedException("Wrong credentials! D");
+        }
+        u.setPassword(dto.getNewPassword());
+        userRepository.save(u);
+    }
 
     public UserWithoutPassDTO getById(int uid) {
         // TODO: 22.10.2022 г.
