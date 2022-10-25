@@ -1,11 +1,13 @@
 package com.example.emag.service;
 
+import com.example.emag.model.dto.order.ProductOrderDTO;
 import com.example.emag.model.dto.product.*;
 import com.example.emag.model.entities.*;
 import com.example.emag.model.exceptions.BadRequestException;
 import com.example.emag.model.exceptions.NotFoundException;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -58,7 +60,7 @@ public class ProductService extends AbstractService{
         return modelMapper.map(u,LikedProductsDTO.class);
     }
 
-    public int addToCart(long pid, long uid, int quantity) {
+    public ProductOrderDTO addToCart(long pid, long uid, int quantity) {
         validateQuantity(quantity);
         UserProductsInCartKey pk = new UserProductsInCartKey();
         pk.setUserId(uid);
@@ -71,7 +73,10 @@ public class ProductService extends AbstractService{
         productsInCart.setId(pk);
         productsInCart.setQuantity(quantity);
         userCartRepository.save(productsInCart);
-        return productsInCart.getQuantity();
+        ProductOrderDTO dto = new ProductOrderDTO();
+        dto.setName(p.getName());
+        dto.setQuantity(productsInCart.getQuantity());
+        return dto;
     }
 
     public String addImage(MultipartFile file, long pid) {
@@ -117,13 +122,15 @@ public class ProductService extends AbstractService{
         return modelMapper.map(productRepository.save(p), ProductDTO.class);
     }
 
-    public int removeProductFromCart(long pid, long uid) {
+    public ProductOrderDTO removeProductFromCart(long pid, long uid) {
         UserProductsInCartKey pk = new UserProductsInCartKey();
         pk.setProductId(pid);
         pk.setUserId(uid);
         userCartRepository.deleteById(pk);
-        //todo what to return when removing product
-        return 0;
+        ProductOrderDTO dto = new ProductOrderDTO();
+        Product product = getProductById(uid);
+        dto.setName(product.getName());
+        return dto;
     }
 
     public ProductWithFeaturesDTO addFeature(long pid, long fid, String value) {
@@ -237,6 +244,7 @@ public class ProductService extends AbstractService{
         }else {
             Discount discount = getDiscountById(dto.getDiscountId());
             p.setDiscount(discount);
+            sendEmail(p);
         }
         return setProductProperties(dto, p);
     }
@@ -258,5 +266,9 @@ public class ProductService extends AbstractService{
             throw new BadRequestException("File does not exists");
         }
         return url;
+    }
+
+    public List<ProductQueryDTO> filterMinMax(int min, int max, boolean desc) {
+        return productDAO.filterMinMaxPrice(min, max, desc);
     }
 }

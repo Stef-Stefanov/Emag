@@ -7,6 +7,7 @@ import com.example.emag.model.dto.product.ProductDTO;
 import com.example.emag.model.entities.Category;
 import com.example.emag.model.entities.Discount;
 import com.example.emag.model.entities.Product;
+import com.example.emag.model.entities.User;
 import com.example.emag.model.exceptions.BadRequestException;
 import org.springframework.stereotype.Service;
 
@@ -69,6 +70,9 @@ public class CategoryService extends AbstractService{
         Discount discount = getDiscountById(did);
         List<Product> products = category.getProducts();
         for (Product product : products) {
+            if(discount != null) {
+                sendEmail(product);
+            }
             product.setDiscount(discount);
         }
        return products.stream().map (product -> modelMapper.map(productRepository.save(product), ProductDTO.class))

@@ -1,6 +1,7 @@
 package com.example.emag.controller;
 
 import com.example.emag.model.dto.FeatureDTO;
+import com.example.emag.model.dto.order.ProductOrderDTO;
 import com.example.emag.model.dto.product.*;
 import com.example.emag.model.exceptions.BadRequestException;
 import com.example.emag.service.ProductService;
@@ -30,48 +31,53 @@ public class ProductController extends AbstractController{
         return productService.getById(pid);
     }
     @PostMapping("/products")
-    public ProductDTO addProduct(@RequestBody ProductAddDTO p){
-        //todo check if admin
+    public ProductDTO addProduct(@RequestBody ProductAddDTO p, HttpServletRequest req){
+        //todo fix
+        long uid = getLoggedUserId(req);
         return productService.add(p);
     }
 
     @PostMapping("/products/{pid}/like")
     public LikedProductsDTO likeProduct(@PathVariable int pid, HttpServletRequest req){
-        //todo check if logged
+//        todo check if logged v
          long uid = getLoggedUserId(req);
         return productService.like(pid,uid);
     }
 
     @PostMapping("/products/{pid}/cart")
-    public int addProductInCart(@PathVariable int pid, HttpServletRequest req, @RequestParam int quantity){
-        //todo check if logged
+    public ProductOrderDTO addProductInCart(@PathVariable int pid, HttpServletRequest req, @RequestParam int quantity){
+        //todo check if logged v
         long uid = getLoggedUserId(req);
         return productService.addToCart(pid, uid, quantity);
     }
 
     @DeleteMapping("/products/{pid}/cart")
-    public int removeProductFromCart(@PathVariable int pid, HttpServletRequest req){
-        //todo check if logged
+    public ProductOrderDTO removeProductFromCart(@PathVariable int pid, HttpServletRequest req){
+        //todo check if logged v
         long uid = getLoggedUserId(req);
         return productService.removeProductFromCart(pid,uid);
     }
 
     @PostMapping("/products/{pid}/image")
-    public String addImage(@RequestParam MultipartFile file, @PathVariable long pid){
+    public String addImage(@RequestParam MultipartFile file, @PathVariable long pid, HttpServletRequest req){
+        long uid = getLoggedUserId(req);
         //todo check if admin
         return productService.addImage(file,pid);
     }
 
     @PutMapping("products/{pid}")
-    public ProductDTO editProduct(@PathVariable long pid,@RequestBody ProductAddDTO dto){
+    public ProductDTO editProduct(@PathVariable long pid,@RequestBody ProductAddDTO dto, HttpServletRequest req){
         //todo check if admin
+        //todo
+        long uid = getLoggedUserId(req);
         return productService.edit(pid, dto);
     }
     @DeleteMapping(value = "products/{pid}", headers = "password=dve")
-    public ProductWithFeaturesDTO deleteProduct(@PathVariable long pid){
+    public ProductWithFeaturesDTO deleteProduct(@PathVariable long pid, HttpServletRequest req){
         //todo check if admin
         // check if ongoing purchases
         // cancel all purchases
+        long uid = getLoggedUserId(req);
         return productService.deleteById(pid);
     }
 
@@ -112,5 +118,12 @@ public class ProductController extends AbstractController{
         //todo check if admin
       return productService.deleteImage(pid, iid, url);
     }
+
+    @GetMapping("products/filter")
+    public List<ProductQueryDTO> filterProducts(@RequestParam int min, @RequestParam int max,
+                                                @RequestParam(required = false) boolean desc){
+        return productService.filterMinMax(min, max, desc);
+    }
+
 
 }
