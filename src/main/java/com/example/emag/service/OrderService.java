@@ -54,7 +54,7 @@ public class OrderService extends AbstractService{
             int leftQuantityInShop = checkIfQuantityIsEnough(product, currentProductInCart);
             product.setQuantity(leftQuantityInShop);// сетваме новото количество
             order.setPrice(order.getPrice() + sumTotalPrice(currentProductInCart, totalPrice));
-            order.setUserId(user.getId());
+            order.setUser(user);
             order.setCreatedAt(LocalDateTime.now());
             orderProductsOneByOne(product, currentProductInCart, order);
         }
