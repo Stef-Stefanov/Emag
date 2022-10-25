@@ -1,22 +1,27 @@
 package com.example.emag.controller;
 
 import com.example.emag.model.dto.ErrorDTO;
+import com.example.emag.model.entities.User;
 import com.example.emag.model.exceptions.BadRequestException;
 import com.example.emag.model.exceptions.NotFoundException;
 import com.example.emag.model.exceptions.UnauthorizedException;
 import com.example.emag.service.UserService;
+import com.example.emag.model.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
+import java.util.Properties;
 
 public abstract class AbstractController {
     @Autowired
     protected UserService userService;
+    private UserRepository userRepository;
     public static final String LOGGED = "LOGGED";
     public static final String USER_ID = "USER_ID";
     public static final String REMOTE_IP = "REMOTE_IP";

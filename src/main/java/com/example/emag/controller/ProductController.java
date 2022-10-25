@@ -1,22 +1,13 @@
 package com.example.emag.controller;
 
-import com.example.emag.model.dto.FeatureDTO;
+import com.example.emag.model.dto.order.ProductOrderDTO;
 import com.example.emag.model.dto.product.*;
-import com.example.emag.model.exceptions.BadRequestException;
 import com.example.emag.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.domain.Page;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.awt.print.Pageable;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.List;
 
 @RestController
@@ -34,6 +25,8 @@ public class ProductController extends AbstractController{
         checkIfLogged(req);
         checkIpWithSessionIp(req);
         checkIfAdmin(req);
+        //todo fix
+        long uid = getLoggedUserId(req);
         return productService.add(p);
     }
 
@@ -45,14 +38,14 @@ public class ProductController extends AbstractController{
     }
 
     @PostMapping("/products/{pid}/cart")
-    public int addProductInCart(@PathVariable int pid, HttpServletRequest req, @RequestParam int quantity){
+    public ProductOrderDTO addProductInCart(@PathVariable int pid, HttpServletRequest req, @RequestParam int quantity){
         checkIfLogged(req);
         long uid = getLoggedUserId(req);
         return productService.addToCart(pid, uid, quantity);
     }
 
     @DeleteMapping("/products/{pid}/cart")
-    public int removeProductFromCart(@PathVariable int pid, HttpServletRequest req){
+    public ProductOrderDTO removeProductFromCart(@PathVariable int pid, HttpServletRequest req){
         checkIfLogged(req);
         long uid = getLoggedUserId(req);
         return productService.removeProductFromCart(pid,uid);
@@ -63,6 +56,7 @@ public class ProductController extends AbstractController{
         checkIfLogged(req);
         checkIpWithSessionIp(req);
         checkIfAdmin(req);
+        long uid = getLoggedUserId(req);
         return productService.addImage(file,pid);
     }
 
@@ -71,6 +65,7 @@ public class ProductController extends AbstractController{
         checkIfLogged(req);
         checkIpWithSessionIp(req);
         checkIfAdmin(req);
+        long uid = getLoggedUserId(req);
         return productService.edit(pid, dto);
     }
     @DeleteMapping(value = "products/{pid}", headers = "password=dve")
@@ -80,6 +75,7 @@ public class ProductController extends AbstractController{
         checkIfAdmin(req);
         // check if ongoing purchases
         // cancel all purchases
+        long uid = getLoggedUserId(req);
         return productService.deleteById(pid);
     }
 
@@ -132,5 +128,12 @@ public class ProductController extends AbstractController{
         checkIfAdmin(req);
       return productService.deleteImage(pid, iid, url);
     }
+
+    @GetMapping("products/filter")
+    public List<ProductQueryDTO> filterProducts(@RequestParam int min, @RequestParam int max,
+                                                @RequestParam(required = false) boolean desc){
+        return productService.filterMinMax(min, max, desc);
+    }
+
 
 }

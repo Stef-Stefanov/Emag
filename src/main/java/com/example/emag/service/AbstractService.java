@@ -1,15 +1,18 @@
 package com.example.emag.service;
 
+import com.example.emag.model.dao.ProductDAO;
 import com.example.emag.model.dto.product.ProductAddDTO;
 import com.example.emag.model.entities.*;
 import com.example.emag.model.exceptions.NotFoundException;
 import com.example.emag.model.repositories.*;
+import com.example.emag.model.util.EmailSender;
 import org.aspectj.weaver.ast.Not;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import java.util.List;
 
 import java.util.Random;
 
@@ -39,6 +42,10 @@ public abstract class AbstractService {
     protected OrderRepository orderRepository;
     @Autowired
     protected OrderProductRepository orderProductRepository;
+    @Autowired
+    protected ProductDAO productDAO;
+    @Autowired
+    protected EmailSender emailSender;
     protected static String adminPassword = "123";
 
     /**
@@ -92,5 +99,13 @@ public abstract class AbstractService {
     protected ProductImage getProductImageById(long id){
         return productImageRepository.findById(id).orElseThrow(() -> new NotFoundException("Product image not found"));
     }
+
+    protected void sendEmail(Product product){
+        List<User> subscribers = product.getLikes();
+        for (User user : subscribers){
+            emailSender.sendMessage(user.getEmail(), product);
+        }
+    }
+
 
 }
