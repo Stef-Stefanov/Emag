@@ -20,9 +20,12 @@ public class Order {
     private double price;
     @Column
     private LocalDateTime createdAt;
-    //todo fix this relation with user one to many
-    @Column
-    private long userId;
+    /**
+     * Owner == userId
+     */
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
     @OneToMany(mappedBy = "order")
     private List<OrderProduct> productsInOrder;
 }
