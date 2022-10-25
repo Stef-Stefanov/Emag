@@ -15,15 +15,6 @@ import java.util.Random;
 
 @Service
 public abstract class AbstractService {
-    protected static String adminPassword = "123";
-    @Async
-    @Scheduled(cron ="1 * * * * *",zone = "EET")
-    protected void changeAdminPasswordCronJob(){
-        // todo implement https://sourceforge.net/projects/trng-random-org/
-        adminPassword = String.valueOf(new Random().nextLong());
-        System.out.println("working cron job");
-        System.out.println(adminPassword);
-    }
     @Autowired
     protected ProductRepository productRepository;
     @Autowired
@@ -48,6 +39,27 @@ public abstract class AbstractService {
     protected OrderRepository orderRepository;
     @Autowired
     protected OrderProductRepository orderProductRepository;
+    protected static String adminPassword = "123";
+
+    /**
+     *
+     * The changeAdminPasswordCronJob changes the master admin password every so often to a new randomly generated one.
+     *
+     * The master adminPassword is used to make a regular user into an administrator.
+     * Once the application is run there is a small window of opportunity where the client can become an administrator
+     * using the initial admin password.
+     * After that the CronJob changes that password to a new randomly generated password. //todo change line if implement true random
+     * In oder for a new user to be made into an administrator, a already existing admin needs to look up the
+     * adminPassword using the secure method lookUpAdminPassword and give the current password
+     */
+    @Async
+    @Scheduled(cron ="1 * * * * *",zone = "EET")
+    protected void changeAdminPasswordCronJob(){
+        // todo implement https://sourceforge.net/projects/trng-random-org/
+        adminPassword = String.valueOf(new Random().nextLong());
+        System.out.println("working cron job");
+        System.out.println(adminPassword);
+    }
 
 //    protected Product findProductById(long id) {
 //        return productRepository.findById(id).orElseThrow(() -> new NotFoundException("Product not found"));
