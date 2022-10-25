@@ -6,19 +6,25 @@ import com.example.emag.service.DiscountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+
 @RestController
 public class DiscountController extends AbstractController {
     @Autowired
     private DiscountService discountService;
     @PostMapping("discounts")
-    public DiscountResponseDTO addDiscount(@RequestBody DiscountRequestDTO requestDTO){
-        //todo check if admin
+    public DiscountResponseDTO addDiscount(@RequestBody DiscountRequestDTO requestDTO, HttpServletRequest req){
+        checkIfLogged(req);
+        checkIpWithSessionIp(req);
+        checkIfAdmin(req);
         return discountService.add(requestDTO);
     }
 
     @DeleteMapping("discounts/{id}")
-    public DiscountResponseDTO removeDiscount(@PathVariable long id){
-        //todo check if admin
+    public DiscountResponseDTO removeDiscount(@PathVariable long id, HttpServletRequest req){
+        checkIfLogged(req);
+        checkIpWithSessionIp(req);
+        checkIfAdmin(req);
         return discountService.remove(id);
     }
 }

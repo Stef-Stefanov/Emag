@@ -22,8 +22,8 @@ public class ReviewController extends AbstractController {
     private ReviewService reviewService;
 
     @PostMapping("/reviews")
-    public ReviewResponseDTO addReview(@RequestBody ReviewRequestDTO dto) {
-        //todo check if logged
+    public ReviewResponseDTO addReview(@RequestBody ReviewRequestDTO dto, HttpServletRequest req) {
+        checkIfLogged(req);
         return reviewService.add(dto);
     }
 

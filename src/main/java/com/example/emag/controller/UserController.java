@@ -6,6 +6,7 @@ import com.example.emag.model.exceptions.BadRequestException;
 import com.example.emag.model.exceptions.UnauthorizedException;
 import com.example.emag.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -13,29 +14,37 @@ import javax.servlet.http.HttpSession;
 
 @RestController
 public class UserController extends AbstractController{
-    @Autowired
-    private UserService userService;
 
     @PostMapping("/users")
     public RegisterDTO registerUser(@RequestBody RegisterDTO dto, HttpServletRequest req){
-        User result = userService.registerUser(dto, req.getSession());
+        if (checkIfLoggedBoolean(req.getSession())){
+            throw new BadRequestException("You are already logged in");
+        }
+        if(!dto.getPassword().equals(dto.getConfirmPassword())){
+            throw new BadRequestException("Passwords mismatch!");
+        }
+        User result = userService.registerUser(dto);
         logUser(req, result.getId());
         return dto;
     }
+    @Transactional
     @DeleteMapping("/end")
     public void deleteUser(@RequestBody LoginDTO dto, HttpServletRequest req){
-        userService.deleteUser(dto, req.getSession());
+        checkIfLogged(req);
+        checkIpWithSessionIp(req);
+        userService.deleteUser(dto, (long) req.getSession().getAttribute("USER_ID"));
+        req.getSession().invalidate();
     }
     @PostMapping("/auth")
-    public UserWithoutPassDTO login(@RequestBody LoginDTO dto, HttpSession s, HttpServletRequest req){
-        if (userService.checkIfLoggedBoolean(s)){
+    public UserWithoutPassDTO login(@RequestBody LoginDTO dto, HttpServletRequest req){
+        if (checkIfLoggedBoolean(req.getSession())){
             throw new BadRequestException("You are already logged in!");
         }
         UserWithoutPassDTO result = userService.loginUser(dto);
         if(result != null){
-            s.setAttribute("LOGGED", true);
-            s.setAttribute("USER_ID", result.getId());
-            s.setAttribute("REMOTE_IP", req.getRemoteAddr());
+            req.getSession().setAttribute("LOGGED", true);
+            req.getSession().setAttribute("USER_ID", result.getId());
+            req.getSession().setAttribute("REMOTE_IP", req.getRemoteAddr());
             return result;
         }
         else{
@@ -55,19 +64,27 @@ public class UserController extends AbstractController{
     }
 
     @PutMapping("/update")
-    public void updateUserDate(@RequestBody UpdateProfileDTO dto, HttpSession s){
-        userService.updateUserInfo(dto, s);
+    public void updateUserDate(@RequestBody UpdateProfileDTO dto, HttpServletRequest req){
+        checkIfLogged(req);
+        checkIpWithSessionIp(req);
+        userService.updateUserInfo(dto, (long)req.getSession().getAttribute("USER_ID"));
     }
     @PutMapping("/secure")
-    public void updateUserPass(@RequestBody ChangePassDTO dto, HttpSession s){
-        userService.updatePass(dto, s);
+    public void updateUserPass(@RequestBody ChangePassDTO dto, HttpServletRequest req){
+        checkIfLogged(req);
+        checkIpWithSessionIp(req);
+        userService.updatePass(dto, (long)req.getSession().getAttribute("USER_ID"));
     }
     @PutMapping("/upgrade")
-    public void giveAdminPrivileges(@RequestBody AdminDTO dto, HttpSession s){
-        userService.makeAdmin(dto, s);
+    public void giveAdminPrivileges(@RequestBody AdminDTO dto, HttpServletRequest req){
+        checkIfLogged(req);
+        checkIpWithSessionIp(req);
+        userService.makeAdmin(dto, (long)req.getSession().getAttribute("USER_ID"));
     }
     @PostMapping("/priv")
-    public String lookUpAdmin(@RequestBody LoginDTO dto, HttpSession s){
-        return userService.lookUpAdminPassword(dto,s);
+    public String lookUpMasterAdminPassword(@RequestBody LoginDTO dto, HttpServletRequest req){
+        checkIfLogged(req);
+        checkIpWithSessionIp(req);
+        return userService.lookUpAdminPassword(dto,(long)req.getSession().getAttribute("USER_ID"));
     }
 }

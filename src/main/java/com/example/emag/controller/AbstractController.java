@@ -4,6 +4,8 @@ import com.example.emag.model.dto.ErrorDTO;
 import com.example.emag.model.exceptions.BadRequestException;
 import com.example.emag.model.exceptions.NotFoundException;
 import com.example.emag.model.exceptions.UnauthorizedException;
+import com.example.emag.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -13,7 +15,8 @@ import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
 
 public abstract class AbstractController {
-
+    @Autowired
+    protected UserService userService;
     public static final String LOGGED = "LOGGED";
     public static final String USER_ID = "USER_ID";
     public static final String REMOTE_IP = "REMOTE_IP";
@@ -70,5 +73,42 @@ public abstract class AbstractController {
         session.setAttribute(LOGGED, true);
         session.setAttribute(USER_ID, id);
         session.setAttribute(REMOTE_IP, req.getRemoteAddr());
+    }
+    protected void checkIfLogged(HttpServletRequest req){
+        HttpSession session = req.getSession();
+        if (session.isNew()){
+            session.setAttribute(LOGGED,false);
+            session.setAttribute(REMOTE_IP, req.getRemoteAddr());
+            throw new UnauthorizedException("You are not logged in! A");
+        }
+        if (!(boolean) session.getAttribute(LOGGED)){
+            throw new UnauthorizedException("You are not logged in! B");
+        }
+    }
+    public boolean checkIfLoggedBoolean(HttpSession s){
+        if(null == s.getAttribute(LOGGED)){
+            s.setAttribute(LOGGED,false);
+        }
+        return (boolean) s.getAttribute(LOGGED);
+    }
+    public void checkIfAdmin(HttpServletRequest req){
+        checkIfLogged(req);
+        checkIpWithSessionIp(req);
+        if ( ! userService.checkIfAdminUserId((long) req.getSession().getAttribute("USER_ID"))){
+            throw new UnauthorizedException("You are not an administrator!");
+        }
+    }
+    /**
+     * Protects against session high jacking by comparing the session's logged IP with the request's IP.
+     * If there is a mismatch the method invalidates the session.
+     * @param  req HttpServletRequest
+     * @return boolean
+     */
+    public void checkIpWithSessionIp(HttpServletRequest req) {
+        checkIfLogged(req);
+        if ( ! req.getRemoteAddr().equals(req.getSession().getAttribute(REMOTE_IP))) {
+            req.getSession().invalidate();
+            throw new BadRequestException("Possible session high jacking");
+        }
     }
 }

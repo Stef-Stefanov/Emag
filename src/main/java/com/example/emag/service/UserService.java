@@ -3,13 +3,12 @@ package com.example.emag.service;
 import com.example.emag.model.dto.user.*;
 import com.example.emag.model.entities.User;
 import com.example.emag.model.exceptions.BadRequestException;
+import com.example.emag.model.exceptions.GoneEntityException;
 import com.example.emag.model.exceptions.UnauthorizedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -35,13 +34,7 @@ public class UserService extends AbstractService{
         }
     }
     @Transactional
-    public User registerUser(RegisterDTO dto, HttpSession s ){
-        if (checkIfLoggedBoolean(s)){
-            throw new BadRequestException("You are already logged in");
-        }
-        if(!dto.getPassword().equals(dto.getConfirmPassword())){
-            throw new BadRequestException("Passwords mismatch!");
-        }
+    public User registerUser(RegisterDTO dto){
         checkEmailAvailability(dto.getEmail());
         LoginDTO loginDTO = transformRegisterDtoIntoLoginDto(dto);
         validate(dto);
@@ -54,11 +47,10 @@ public class UserService extends AbstractService{
         return result;
     }
 
-    public void updateUserInfo(UpdateProfileDTO dto, HttpSession s){
+    public void updateUserInfo(UpdateProfileDTO dto, long userID){
         // todo what if user doesn't exist? -> GoneException
         // todo fix when no changes -> throw exc
-        checkIfLogged(s);
-        User u = userRepository.findById((long)s.getAttribute("USER_ID")).orElseThrow();
+        User u = userRepository.findById(userID).orElseThrow();
         if (!dto.getEmail().equals(u.getEmail())) {
             checkEmailAvailability(dto.getEmail());
             validateEmail(dto.getEmail());
@@ -76,20 +68,18 @@ public class UserService extends AbstractService{
         u.setSubscribed(dto.isSubscribed());
         userRepository.save(u);
     }
-    public void updatePass(ChangePassDTO dto, HttpSession s){
-        checkIfLogged(s);
+    public void updatePass(ChangePassDTO dto, long userID){
         if (!dto.getNewPassword().equals(dto.getConfirmNewPassword())) {
             throw new BadRequestException("New password mismatch");
         }
         validatePassword(dto.getNewPassword());
-        User u = checkCredentials(dto,s);
+        User u = checkCredentials(dto,userID);
         u.setPassword(dto.getNewPassword());
         userRepository.save(u);
     }
 
-    public void makeAdmin(AdminDTO dto, HttpSession s){
-        checkIfLogged(s);
-        User u = checkCredentials(dto, s);
+    public void makeAdmin(AdminDTO dto, long userID){
+        User u = checkCredentials(dto, userID);
         if (! dto.getAdminPassword().equals(adminPassword)) {
             throw new UnauthorizedException("Wrong credentials! Q");
         }
@@ -97,9 +87,8 @@ public class UserService extends AbstractService{
         userRepository.save(u);
     }
 
-    public String lookUpAdminPassword(LoginDTO dto, HttpSession s) {
-        checkIfLogged(s);
-        User u = checkCredentials(dto,s);
+    public String lookUpAdminPassword(LoginDTO dto, long userID) {
+        User u = checkCredentials(dto, userID);
         if (!u.isAdmin()){
             throw new UnauthorizedException("You are not an administrator!");
         }
@@ -107,12 +96,13 @@ public class UserService extends AbstractService{
         return adminPassword;
     }
 
-    public void deleteUser(LoginDTO dto, HttpSession s) {
-        checkIfLogged(s);
-        matchEmailToSessionUserID(dto.getEmail(), s);
+    public void deleteUser(LoginDTO dto, long userID) {
+        if (!checkLoginCredentialsToUserID(dto.getEmail(), userID)) {
+            throw new UnauthorizedException("Bad Credentials! 45");
+        }
         loginUser(dto);
-        userRepository.deleteById((long)s.getAttribute("USER_ID"));
-        s.invalidate();
+        userRepository.deleteById(userID);
+
     }
     /**=======================================================
      A public master method that calls the different validation methods of a full set UserDTO.
@@ -177,35 +167,10 @@ public class UserService extends AbstractService{
             throw new BadRequestException("Email is taken");
         }
     }
-    private boolean checkIfLogged(HttpSession s){
-        if (s.isNew()){
-            s.setAttribute("LOGGED",false);
-            throw new UnauthorizedException("You are not logged in! A");
-        }
-        if (!(boolean) s.getAttribute("LOGGED")){
-            throw new UnauthorizedException("You are not logged in! B");
-        }
-        return true;
-    }
-    public boolean checkIfLoggedBoolean(HttpSession s){
-        if(null == s.getAttribute("LOGGED")){
-            s.setAttribute("LOGGED",false);
-        }
-        return (boolean) s.getAttribute("LOGGED");
-    }
-    private boolean matchEmailToSessionUserID(String email, HttpSession session){
-        if (null != session.getAttribute("USER_ID")) {
-            boolean result;
-            try {
-                result = email
-                        .equals(userRepository
-                                .findById((long)session.getAttribute("USER_ID")).orElseThrow().getEmail());
-            } catch (NoSuchElementException e) {
-                throw new UnauthorizedException("Wrong credentials! T");
-            }
-            return result;
-        }
-        return false;
+    private boolean checkLoginCredentialsToUserID(String email, long userID){
+           return userRepository.findById(userID)
+                   .orElseThrow(() -> new GoneEntityException("Bad credentials! 54"))
+                   .getEmail().equals(email);
     }
 
     private LoginDTO transformRegisterDtoIntoLoginDto(RegisterDTO rdto){
@@ -214,24 +179,24 @@ public class UserService extends AbstractService{
         loginDTO.setPassword(rdto.getPassword());
         return loginDTO;
     }
-    public User checkCredentials(AdminDTO dto, HttpSession s){
-        User u = userRepository.findById((long)s.getAttribute("USER_ID")).orElseThrow();
+    public User checkCredentials(AdminDTO dto, long userID){
+        User u = userRepository.findById(userID).orElseThrow();
         if (!dto.getPassword().equals(u.getPassword())
                 && !dto.getPassword().equals(u.getPassword())){
             throw new UnauthorizedException("Wrong credentials! D");
         }
         return u;
     }
-    public User checkCredentials(LoginDTO dto, HttpSession s){
-        User u = userRepository.findById((long)s.getAttribute("USER_ID")).orElseThrow();
+    public User checkCredentials(LoginDTO dto, long userID){
+        User u = userRepository.findById(userID).orElseThrow();
         if (!dto.getPassword().equals(u.getPassword())
                 && !dto.getEmail().equals(u.getEmail())){
             throw new UnauthorizedException("Wrong credentials! D");
         }
         return u;
     }
-    public User checkCredentials(ChangePassDTO dto, HttpSession s){
-        User u = userRepository.findById((long)s.getAttribute("USER_ID")).orElseThrow();
+    public User checkCredentials(ChangePassDTO dto, long userID){
+        User u = userRepository.findById(userID).orElseThrow();
         if (!dto.getPassword().equals(u.getPassword())
                 && !dto.getPassword().equals(u.getPassword())){
             throw new UnauthorizedException("Wrong credentials! D");
@@ -245,5 +210,10 @@ public class UserService extends AbstractService{
         } catch (RuntimeException e) {
             throw new BadRequestException("No such user found");
         }
+    }
+    public boolean checkIfAdminUserId(long uid){
+        return userRepository.findById(uid)
+                .orElseThrow(()-> new GoneEntityException("No such user!"))
+                .isAdmin();
     }
 }
