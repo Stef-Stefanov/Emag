@@ -31,7 +31,7 @@ public class UserController extends AbstractController{
         if (userService.checkIfLoggedBoolean(s)){
             throw new BadRequestException("You are already logged in!");
         }
-        UserWithoutPassDTO result = userService.login(dto);
+        UserWithoutPassDTO result = userService.loginUser(dto);
         if(result != null){
             s.setAttribute("LOGGED", true);
             s.setAttribute("USER_ID", result.getId());
@@ -56,7 +56,7 @@ public class UserController extends AbstractController{
 
     @PutMapping("/update")
     public void updateUserDate(@RequestBody UpdateProfileDTO dto, HttpSession s){
-        userService.updateInfo(dto, s);
+        userService.updateUserInfo(dto, s);
     }
     @PutMapping("/secure")
     public void updateUserPass(@RequestBody ChangePassDTO dto, HttpSession s){
