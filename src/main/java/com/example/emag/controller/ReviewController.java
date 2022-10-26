@@ -21,35 +21,36 @@ public class ReviewController extends AbstractController {
     @Autowired
     private ReviewService reviewService;
 
-    @PostMapping("/reviews")
-    public ReviewResponseDTO addReview(@RequestBody ReviewRequestDTO dto, HttpServletRequest req) {
+    @PostMapping("/reviews/{pid}")
+    public ReviewResponseDTO addReview(@RequestBody ReviewRequestDTO dto, HttpServletRequest req,
+                                       @PathVariable long pid) {
         checkIfLogged(req);
-        return reviewService.add(dto);
+        long uid = getLoggedUserId(req);
+        return reviewService.add(dto, uid, pid);
     }
 
     @GetMapping("reviews/users/{uid}")
     public List<ReviewFromUsersDTO> getAllReviewsFromUser (@PathVariable long uid){
-        //todo check if admin or no
         return reviewService.getAllReviewsFromUser(uid);
     }
 
     @GetMapping("reviews/products/{pid}")
     public List<ReviewForProductDTO> getAllReviewsForProduct (@PathVariable long pid){
-        //todo check if admin
         return reviewService.getAllReviewsForProduct(pid);
     }
 
     @DeleteMapping("reviews/{rid}")
-    public ReviewResponseDTO deleteReview(@PathVariable long rid){
-        //todo check if admin
-        return reviewService.deleteReview(rid);
+    public ReviewResponseDTO deleteReview(@PathVariable long rid, HttpServletRequest req){
+        checkIfLogged(req);
+        long uid = getLoggedUserId(req);
+        return reviewService.deleteReview(rid, uid);
     }
 
     @PutMapping("reviews/{rid}")
-    public ReviewResponseDTO editReview(@PathVariable long rid, HttpServletRequest request, @RequestBody ReviewRequestDTO dto){
-//        logUser(request);
+    public ReviewResponseDTO editReview(@PathVariable long rid, HttpServletRequest request,
+                                        @RequestBody ReviewRequestDTO dto){
+        checkIfLogged(request);
         long uid = getLoggedUserId(request);
         return reviewService.editReview(rid, uid, dto);
     }
-        //todo add session to check if user
 }

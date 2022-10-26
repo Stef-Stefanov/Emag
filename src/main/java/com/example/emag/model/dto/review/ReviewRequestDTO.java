@@ -12,6 +12,4 @@ import java.time.LocalDateTime;
 public class ReviewRequestDTO {
     private String text;
     private int rating;
-    private long userId;
-    private long productId;
 }

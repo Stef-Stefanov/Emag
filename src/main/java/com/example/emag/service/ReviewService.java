@@ -18,10 +18,10 @@ import java.util.stream.Collectors;
 public class ReviewService extends AbstractService{
 
 
-    public ReviewResponseDTO add(ReviewRequestDTO dto) {
+    public ReviewResponseDTO add(ReviewRequestDTO dto, long uid, long pid) {
         validateDTO(dto);
-        User user = getUserById(dto.getUserId());
-        Product product = getProductById(dto.getProductId());
+        User user = getUserById(uid);
+        Product product = getProductById(pid);
         Review review = new Review();
         review.setProduct(product);
         review.setUser(user);
@@ -51,27 +51,29 @@ public class ReviewService extends AbstractService{
     public List<ReviewForProductDTO> getAllReviewsForProduct(long pid) {
         Product product = getProductById(pid);
         List<Review> productReviews = product.getReviews();
-        //todo can add new userdto with id and name
         return productReviews.stream().map(review -> modelMapper.map(review, ReviewForProductDTO.class))
                 .collect(Collectors.toList());
     }
 
-    public ReviewResponseDTO deleteReview(long rid) {
+    public ReviewResponseDTO deleteReview(long rid, long uid) {
         Review review = getReviewById(rid);
+        User user = getUserById(uid);
+        List<Review> reviews = user.getReviews();
+        if(!checkIfReviewIsFromThisUser(reviews, rid) && !user.isAdmin()){
+            throw new BadRequestException("User hasn't reviewed this product or not admin");
+        }
         ReviewResponseDTO dto = modelMapper.map(review, ReviewResponseDTO.class);
         reviewRepository.deleteById(rid);
         return dto;
     }
 
     public ReviewResponseDTO editReview(long rid, long uid, ReviewRequestDTO dto) {
-        // check if this user has review for the current product
-        //todo fix
         validateDTO(dto);
         User user = getUserById(uid);
         Review review = getReviewById(rid);
         List<Review> reviews = user.getReviews();
         if(!checkIfReviewIsFromThisUser(reviews, rid)) {
-            throw new BadRequestException("You didn't write a review for this product");
+            throw new BadRequestException("User hasn't written any review for this product");
         }
         review.setText(dto.getText());
         review.setRating(dto.getRating());
