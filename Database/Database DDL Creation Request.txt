@@ -1,0 +1,273 @@
+-- MySQL Workbench Forward Engineering
+
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+
+-- -----------------------------------------------------
+-- Schema emag
+-- -----------------------------------------------------
+
+-- -----------------------------------------------------
+-- Schema emag
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `emag` DEFAULT CHARACTER SET utf8 ;
+USE `emag` ;
+
+-- -----------------------------------------------------
+-- Table `emag`.`users`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `emag`.`users` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `first_name` VARCHAR(50) NOT NULL,
+  `last_name` VARCHAR(50) NOT NULL,
+  `email` VARCHAR(100) NOT NULL,
+  `password` VARCHAR(100) NOT NULL,
+  `created_at` DATETIME NOT NULL,
+  `is_subscribed` TINYINT NOT NULL,
+  `is_admin` TINYINT NOT NULL,
+  `phone_number` VARCHAR(45) NOT NULL,
+  `birth_date` DATETIME NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `emag`.`categories`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `emag`.`categories` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(50) NOT NULL,
+  `parent_category_id` INT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_categories_categories_idx` (`parent_category_id` ASC) VISIBLE,
+  CONSTRAINT `fk_categories_categories`
+    FOREIGN KEY (`parent_category_id`)
+    REFERENCES `emag`.`categories` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `emag`.`discounts`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `emag`.`discounts` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `discount_percentage` INT NOT NULL,
+  `start_date` DATETIME NOT NULL,
+  `expire_date` DATETIME NOT NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `emag`.`products`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `emag`.`products` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(255) NOT NULL,
+  `description` TEXT NULL,
+  `regular_price` DOUBLE NOT NULL,
+  `quantity` INT NOT NULL,
+  `category_id` INT NOT NULL,
+  `discount_id` INT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_products_categories_idx` (`category_id` ASC) VISIBLE,
+  INDEX `fk_products_discounts_idx` (`discount_id` ASC) VISIBLE,
+  CONSTRAINT `fk_products_categories`
+    FOREIGN KEY (`category_id`)
+    REFERENCES `emag`.`categories` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_products_discounts`
+    FOREIGN KEY (`discount_id`)
+    REFERENCES `emag`.`discounts` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `emag`.`reviews`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `emag`.`reviews` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `text` TEXT NOT NULL,
+  `rating` INT(5) NOT NULL,
+  `created_at` DATETIME NOT NULL,
+  `user_id` INT NOT NULL,
+  `product_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_review_users_idx` (`user_id` ASC) VISIBLE,
+  INDEX `fk_reviews_products_idx` (`product_id` ASC) VISIBLE,
+  CONSTRAINT `fk_reviews_users`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `emag`.`users` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_reviews_products`
+    FOREIGN KEY (`product_id`)
+    REFERENCES `emag`.`products` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `emag`.`orders`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `emag`.`orders` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `price` DOUBLE NOT NULL,
+  `created_at` DATETIME NOT NULL,
+  `user_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_idx` (`user_id` ASC) VISIBLE,
+  CONSTRAINT `fk_orders_users`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `emag`.`users` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `emag`.`addresses`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `emag`.`addresses` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `city` VARCHAR(45) NOT NULL,
+  `district` VARCHAR(45) NOT NULL,
+  `address` VARCHAR(200) NOT NULL,
+  `address2` VARCHAR(200) NULL,
+  `ZIP` VARCHAR(10) NOT NULL,
+  `user_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_addresses_users_idx` (`user_id` ASC) VISIBLE,
+  CONSTRAINT `fk_addresses_users`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `emag`.`users` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `emag`.`products_images`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `emag`.`products_images` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `url` VARCHAR(200) NOT NULL,
+  `product_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_products_productsimages_idx` (`product_id` ASC) VISIBLE,
+  CONSTRAINT `fk_products_productsimages`
+    FOREIGN KEY (`product_id`)
+    REFERENCES `emag`.`products` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `emag`.`orders_have_products`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `emag`.`orders_have_products` (
+  `order_id` INT NOT NULL,
+  `product_id` INT NOT NULL,
+  `quantity` INT NOT NULL,
+  PRIMARY KEY (`order_id`, `product_id`),
+  INDEX `fk_ohp_products_idx` (`product_id` ASC) VISIBLE,
+  CONSTRAINT `fk_ohp_orders`
+    FOREIGN KEY (`order_id`)
+    REFERENCES `emag`.`orders` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_ohp_products`
+    FOREIGN KEY (`product_id`)
+    REFERENCES `emag`.`products` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+COMMENT = '		';
+
+
+-- -----------------------------------------------------
+-- Table `emag`.`features`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `emag`.`features` (
+  `id` INT NOT NULL,
+  `name` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `emag`.`products_have_features`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `emag`.`products_have_features` (
+  `product_id` INT NOT NULL,
+  `feature_id` INT NOT NULL,
+  `value` VARCHAR(50) NOT NULL,
+  PRIMARY KEY (`product_id`, `feature_id`),
+  INDEX `fk_phf_features_idx` (`feature_id` ASC) VISIBLE,
+  CONSTRAINT `fk_phf_products`
+    FOREIGN KEY (`product_id`)
+    REFERENCES `emag`.`products` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_phf_features`
+    FOREIGN KEY (`feature_id`)
+    REFERENCES `emag`.`features` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `emag`.`users_like_products`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `emag`.`users_like_products` (
+  `user_id` INT NOT NULL,
+  `product_id` INT NOT NULL,
+  PRIMARY KEY (`user_id`, `product_id`),
+  INDEX `fk_ulp_products_idx` (`product_id` ASC) VISIBLE,
+  CONSTRAINT `fk_ulp_users`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `emag`.`users` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_ulp_products`
+    FOREIGN KEY (`product_id`)
+    REFERENCES `emag`.`products` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `emag`.`user_products_in_cart`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `emag`.`user_products_in_cart` (
+  `user_id` INT NOT NULL,
+  `product_id` INT NOT NULL,
+  `quantity` INT NOT NULL,
+  PRIMARY KEY (`user_id`, `product_id`),
+  INDEX `fk_upic_products_idx` (`product_id` ASC) VISIBLE,
+  CONSTRAINT `fk_upic_users`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `emag`.`users` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_upic_products`
+    FOREIGN KEY (`product_id`)
+    REFERENCES `emag`.`products` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;

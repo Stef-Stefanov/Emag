@@ -1,0 +1,188 @@
+Категории:
+
+“name”:“Компютри & Периферия”			1
+	"name":"Монитори"			3
+	"name":"Лаптопи"			4
+	"name":"PC компоненти"			5
+        	"name":"Графични карти"		6
+        	"name":"Процесори"		7
+"name":"Големи електроуреди"			2
+
+Продукти:
+	Product 1:
+		"name": "Лаптоп Lenovo IdeaPad Gaming 3",
+		"description": "лаптоп 15IHU6, 15.6, Full HD, Intel Core i5-11320H (3.2-4.5GHz, 8M), NVIDIA GTX 1650 4GB GDDR6, 16 GB, 512 GB SSD - 82K101DWBM_16GB",
+		"regularPrice": 1499,
+		"quantity": 70,
+		"categoryId": 4
+	Product 2:
+		"name": "Лаптоп HP ZBook Fury 17 G7",
+		"description": "лаптоп 4K UHD,Intel Xeon W-10885M (2.4/5.3GHz, 16M), NVIDIA Quadro RTX 4000 8GB GDDR6, 64 GB, 2 TB SSD - 2C9V5EA_64GB_2TBSSDNVME",
+    		"regularPrice": 9889,
+    		"quantity": 12,
+    		"categoryId": 4
+	Product 3:
+    		"name": "Лаптоп ASUS Chromebook C223NA-GJ0055",		
+		"description": "лаптоп 11.6", HD, Intel Celeron N3350 (1.10/2.40GHz, 2M), Intel HD Graphics 500, 4 GB, 32 GB SSD - 90NX01Q1-M00810",
+		"regularPrice": 348,
+		"quantity": 95,
+		"categoryId": 4
+	Product 4:
+    		"name": "Монитор Dell 27",
+		"description": "Монитор IPS, UHD 4K, HDMI, DispalyPort, FreeSync, HDR,     Pivot, S2721QS",	
+		"regularPrice": 699,
+		"quantity": 50,
+		"categoryId": 3
+	Product 5:				
+    		"name": "Gaming Samsung Odyssey Neo G7",
+    		"description": "Монитор VA, Извит, 4K UHD, 1ms, 165Hz, Dsipaly Port, FreeSync Premium Pro, Vesa, Black, LS32BG750NUXEN",
+    		"regularPrice": 2249,
+    		"quantity": 50,
+    		"categoryId": 3
+	Product 6:
+    		"name": "Монитор Gaming Samsung",
+    		"description": "LS32BG850NUXEN, Извит, 4K, 32", 240Hz, VA, 16:9, 1000cd/m2, 1ms, DisplayPort, HDMI, HDCP, USB, Pivot, Черен",
+    		"regularPrice": 1399,
+    		"quantity": 70,
+    		"categoryId": 3
+	Product 7:
+    		"name": "GeForce 3090",
+    		"description": "графична карта 24GB GDDR6X, 384-bit",
+    		"regularPrice": 3900,
+    		"quantity": 15,
+    		"categoryId": 6
+	Product 8:
+   		"name": "GeForce RTX 4090",
+    		"description": "лаптоп EXCLUSIVE HYPE-TRAIN Eddition copy 24 GB GDDR6X, Ray Tracing Cores 3rd Generation",
+    		"regularPrice": 9999,
+    		"quantity": 1,
+    		"categoryId": 6
+	Product 9:
+    		"name": "Palit GeForce RTX™ 2060 Dual",
+    		"description": "12GB GDDR6, 192-bit",
+    		"regularPrice": 1098,
+    		"quantity": 45,
+    		"categoryId": 6
+	Product 10:
+    		"name": "GeForce® GTX 1650 OC",
+    		"description": "4GB GDDR6, 128-bit ",
+    		"regularPrice": 772,
+    		"quantity": 50,
+   		"categoryId": 6
+	Product 11:
+    		"name": "Gigabyte Radeon™ RX 6700 XT EAGLE",
+    		"description": "12GB GDDR6, 192-bit ",
+    		"regularPrice": 2056,
+    		"quantity": 50,
+    		"categoryId": 6
+	Product 12:
+    		"name": "Intel® Core™ i5-12600KF Alder Lake",
+    		"description": "3.7GHz, 20MB, Без вградена графична карта, Socket 1700",
+    		"regularPrice": 614,
+    		"quantity": 50,
+    		"categoryId": 7
+	Product 13:
+    		"name": "Процесор AMD Ryzen™ 5 3600",
+    		"description": "4.2GHz, 36MB, socket AM4, Box, Без охладител",
+    		"regularPrice": 315,
+    		"quantity": 50,
+    		"categoryId": 7	
+	Product 14:
+    		"name": "Лаптоп Apple MacBook Air 13",
+    		"description": "True Tone, 13", Apple M1, RAM 8GB, SSD 256GB, 8 ядра CPU и 7 ядра GPU, Space Grey, INT KB ",
+    		"regularPrice": 2199,
+    		"quantity": 50,
+    		"categoryId": 4
+
+	Продукт за добавяне!
+	Product 15:
+    		"name": "Електрически бойлер Tesy BiLight SLIM GCV803820B11TSRC",
+   		"description": "лаптоп",
+    		"regularPrice": 1200,
+    		"quantity": 50,
+    		"categoryId": 2
+
+Ревюта:
+    На един продукт:
+		Product 8: "name": "GeForce RTX 4090"
+	
+	Потребител 2:"email":"liub_pipkov@musician.org", 2/5 "Твърде оувърпрайсд"
+	Потребител 1:"email":"staynov@dr.com", 5/5 Невероятно ексклузив за БГ!!!
+
+История на поръчки на един потребител:
+
+        Петко Стайнов: потр 1
+	Поръчка едно:
+		Product 4: "name": "Монитор Dell 27" x2
+		Product 9: "name": "Palit GeForce RTX™ 2060 Dual"
+        Поръчка две:
+		Product 10: "name": "GeForce® GTX 1650 OC", x10
+
+Количка запазена на един потребител:
+
+	Product 7: "name": "GeForce 3090", x1 
+	Product 13: "name": "Процесор AMD Ryzen™ 5 3600", 
+
+
+Потребители:
+
+	Потребител 1:
+    		"email":"staynov@dr.com",
+		"password":"123aA@",
+		"confirmPassword":"123aA@",
+		"firstName":"Petko",
+		"lastName":"Staynov",
+		"phoneNumber":"0896454554",
+		"birthDate":"1896:12:01"
+		
+		Парола в mail.com - v7PUK7VhZZEJgR2	
+		
+		"isSubscribed":false
+		“isAdmin”:true
+
+	Потребител 2:
+    		"email":"liub_pipkov@musician.org",
+		"password":"Sk512!",
+		"confirmPassword":"Sk512!",
+		"firstName":"Любомир",
+		"lastName":"Пипков",
+		"phoneNumber":"00359885434323",
+		"birthDate":"1904:05:09"
+		
+		Парола в mail.com- g5yGN7YgtyEci4P
+
+		"isSubscribed":false
+		“isAdmin”:true
+
+	Потребител 3: За регистрация.
+    		"email":"krasimir.stoev@ittalents.bg",
+		"password":"jN302$",
+		"confirmPassword":"jN302$",
+		"firstName":"Krassimir",
+		"lastName":"Stoev",
+		"phoneNumber":"0888888888",
+		"birthDate":"1995:01:01"
+
+		"isSubscribed":true
+		“isAdmin”:false => true
+
+За демото:
+
+	Потребител 3: За регистрация.
+    		"email":"krasimir.stoev@ittalents.bg",
+		"password":"jN302$",
+		"confirmPassword":"jN302$",
+		"firstName":"Krassimir",
+		"lastName":"Stoev",
+		"phoneNumber":"0888888888",
+		"birthDate":"1995:01:01"
+
+		"isSubscribed":true
+		“isAdmin”:false => true
+
+	Product 15:
+    		"name": "Електрически бойлер Tesy BiLight SLIM GCV803820B11TSRC",
+   		"description": "лаптоп",
+    		"regularPrice": 1200,
+    		"quantity": 50,
+    		"categoryId": 2
