@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 import java.util.Random;
@@ -64,6 +66,30 @@ public abstract class AbstractService {
         adminPassword = String.valueOf(new Random().nextLong());
         System.out.println("working cron job");
         System.out.println(adminPassword);
+    }
+
+    @Async
+    @Scheduled(cron = "0 1 0 * * ?")
+    protected void checkDiscountExpirationDate(){
+        List<Discount> discounts = discountRepository.findAll();
+        for (Discount discount : discounts){
+            if(discount.getExpireDate().isBefore(LocalDateTime.now())){
+                discount.setDiscountPercentage(0);
+                discountRepository.save(discount);
+            }
+        }
+    }
+
+    @Async
+    @Scheduled(cron = "0 1 1 * * ?")
+    protected void checkIfProductHasExpiredDiscount(){
+        List<Product> products = productRepository.findAll();
+        for(Product product : products){
+            if(product.getDiscount().getDiscountPercentage() == 0){
+                product.setDiscount(null);
+                productRepository.save(product);
+            }
+        }
     }
 
 //    protected Product findProductById(long id) {
