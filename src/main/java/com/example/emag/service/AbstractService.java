@@ -3,6 +3,7 @@ package com.example.emag.service;
 import com.example.emag.model.dao.ProductDAO;
 import com.example.emag.model.dto.product.ProductAddDTO;
 import com.example.emag.model.entities.*;
+import com.example.emag.model.exceptions.BadRequestException;
 import com.example.emag.model.exceptions.NotFoundException;
 import com.example.emag.model.repositories.*;
 import com.example.emag.model.util.EmailSender;
@@ -100,12 +101,22 @@ public abstract class AbstractService {
         return productImageRepository.findById(id).orElseThrow(() -> new NotFoundException("Product image not found"));
     }
 
+    protected UserProductsInCart getUserCart(UserProductsInCartKey pk) {
+        return userCartRepository.findById(pk).orElseThrow(() -> new NotFoundException("No such product in cart"));
+    }
+
     protected void sendEmail(Product product){
         List<User> subscribers = product.getLikes();
         for (User user : subscribers){
             emailSender.sendMessage(user.getEmail(), product);
         }
     }
+
+//    protected void checkIfUserIsAdmin(User user){
+//        if(!user.isAdmin()){
+//            throw new BadRequestException("You are not allowed to perform this action. Must be admin!");
+//        }
+//    }
 
 
 }

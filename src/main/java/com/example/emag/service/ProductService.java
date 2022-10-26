@@ -7,7 +7,6 @@ import com.example.emag.model.exceptions.BadRequestException;
 import com.example.emag.model.exceptions.NotFoundException;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -36,7 +35,6 @@ public class ProductService extends AbstractService{
         validateProduct(dto);
         Category category = getCategoryById(dto.getCategoryId());
         Product product = new Product();
-        checkIfDiscountExist(dto, product);
         product.setName(dto.getName());
         product.setRegularPrice(dto.getRegularPrice());
         product.setDescription(dto.getDescription());
@@ -108,7 +106,6 @@ public class ProductService extends AbstractService{
     public ProductDTO edit(long pid, ProductAddDTO dto) {
         Product p = getProductById(pid);
         validateProduct(dto);
-        checkIfDiscountExist(dto, p);
         return setProductProperties(dto, p);
     }
 
@@ -126,9 +123,10 @@ public class ProductService extends AbstractService{
         UserProductsInCartKey pk = new UserProductsInCartKey();
         pk.setProductId(pid);
         pk.setUserId(uid);
+        getUserCart(pk);
         userCartRepository.deleteById(pk);
         ProductOrderDTO dto = new ProductOrderDTO();
-        Product product = getProductById(uid);
+        Product product = getProductById(pid);
         dto.setName(product.getName());
         return dto;
     }
@@ -171,15 +169,6 @@ public class ProductService extends AbstractService{
         if(p.getQuantity() > 100){
             throw new BadRequestException("Max quantity is 100");
         }
-    }
-
-    private void checkIfDiscountExist(ProductAddDTO dto, Product product) {
-        System.out.println(dto.getDiscountId());
-        if(dto.getDiscountId() != null){
-            Discount discount = getDiscountById(dto.getDiscountId());
-            product.setDiscount(discount);
-        }
-        //todo after discount expires UPDATE products SET discount_id = NULL WHERE  id = (product_id);
     }
 
     public List<ProductDTO> searchByWord(String word) {
@@ -236,21 +225,20 @@ public class ProductService extends AbstractService{
         //todo pages
     }
 
-    public ProductDTO editDiscount(long id, ProductAddDTO dto) {
-        Product p = getProductById(id);
-        validateProduct(dto);
-        if(dto.getDiscountId() == null){
+    public ProductDTO editDiscount(long productId, long discountId) {
+        Product p = getProductById(productId);
+        if(discountId == 0){
             p.setDiscount(null);
         }else {
-            Discount discount = getDiscountById(dto.getDiscountId());
+            Discount discount = getDiscountById(discountId);
             p.setDiscount(discount);
             sendEmail(p);
         }
-        return setProductProperties(dto, p);
+        productRepository.save(p);
+        return modelMapper.map(p, ProductDTO.class);
     }
 
     public String deleteImage(long pid, long iid, String url) {
-        //check if this product has this picture
         Product p = getProductById(pid);
         ProductImage productImage = getProductImageById(iid);
         File file = new File("uploads" + File.separator + url);

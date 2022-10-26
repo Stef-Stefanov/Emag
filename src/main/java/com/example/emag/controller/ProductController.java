@@ -25,15 +25,13 @@ public class ProductController extends AbstractController{
         checkIfLogged(req);
         checkIpWithSessionIp(req);
         checkIfAdmin(req);
-        //todo fix
-        long uid = getLoggedUserId(req);
         return productService.add(p);
     }
 
     @PostMapping("/products/{pid}/like")
     public LikedProductsDTO likeProduct(@PathVariable int pid, HttpServletRequest req){
         checkIfLogged(req);
-         long uid = getLoggedUserId(req);
+        long uid = getLoggedUserId(req);
         return productService.like(pid,uid);
     }
 
@@ -56,7 +54,6 @@ public class ProductController extends AbstractController{
         checkIfLogged(req);
         checkIpWithSessionIp(req);
         checkIfAdmin(req);
-        long uid = getLoggedUserId(req);
         return productService.addImage(file,pid);
     }
 
@@ -65,7 +62,6 @@ public class ProductController extends AbstractController{
         checkIfLogged(req);
         checkIpWithSessionIp(req);
         checkIfAdmin(req);
-        long uid = getLoggedUserId(req);
         return productService.edit(pid, dto);
     }
     @DeleteMapping(value = "products/{pid}", headers = "password=dve")
@@ -73,9 +69,6 @@ public class ProductController extends AbstractController{
         checkIfLogged(req);
         checkIpWithSessionIp(req);
         checkIfAdmin(req);
-        // check if ongoing purchases
-        // cancel all purchases
-        long uid = getLoggedUserId(req);
         return productService.deleteById(pid);
     }
 
@@ -111,18 +104,18 @@ public class ProductController extends AbstractController{
         return productService.findAll(sortByPrice, desc);
     }
 
-    @PutMapping("/products/{id}/discount")
-    public ProductDTO editProductDiscount(@PathVariable long id,
-                                          @RequestBody ProductAddDTO dto, HttpServletRequest req) {
+    @PutMapping("/products/{pid}/discount/{did}")
+    public ProductDTO editProductDiscount(@PathVariable long pid,
+                                          @PathVariable long did, HttpServletRequest req) {
         checkIfLogged(req);
         checkIpWithSessionIp(req);
         checkIfAdmin(req);
-        return productService.editDiscount(id, dto);
+        return productService.editDiscount(pid, did);
     }
 
     @DeleteMapping("products/{pid}/images/{iid}")
     public String deleteImage(@PathVariable long pid, @PathVariable long iid,
-                              @RequestParam String url, HttpServletRequest req){
+        @RequestParam String url, HttpServletRequest req){
         checkIfLogged(req);
         checkIpWithSessionIp(req);
         checkIfAdmin(req);

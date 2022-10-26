@@ -12,6 +12,5 @@ public class ProductAddDTO {
     private int quantity;
     @Column(name = "category_id")
     private Long categoryId;
-    private Long discountId;
 
 }
