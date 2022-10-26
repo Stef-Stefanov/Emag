@@ -1,5 +1,6 @@
 package com.example.emag.controller;
 
+import com.example.emag.model.dto.cart.UserHasProductsInCardWithoutUserIdDTO;
 import com.example.emag.model.dto.user.*;
 import com.example.emag.model.entities.User;
 import com.example.emag.model.exceptions.BadRequestException;
@@ -91,5 +92,15 @@ public class UserController extends AbstractController{
     public UserOrderHistoryDTO lookUpUserOrderHistory(HttpServletRequest req){
         checkIfLogged(req);
         return userService.getOrderHistory((long) req.getSession().getAttribute("USER_ID"));
+    }
+    @GetMapping("/orders/cart")
+    public UserCartDTO lookUpUserCart(HttpServletRequest req){
+        checkIfLogged(req);
+        return userService.getCart((long) req.getSession().getAttribute("USER_ID"));
+    }
+    @GetMapping("/orders/favorites")
+    public UserFavoritesDTO lookUpUserFavorites(HttpServletRequest req){
+        checkIfLogged(req);
+        return userService.getFavorites((long) req.getSession().getAttribute("USER_ID"));
     }
 }
