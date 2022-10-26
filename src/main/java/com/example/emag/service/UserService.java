@@ -1,5 +1,6 @@
 package com.example.emag.service;
 
+import com.example.emag.model.dto.cart.UserHasProductsInCardWithoutUserIdDTO;
 import com.example.emag.model.dto.order.OrderWithoutOwnerDTO;
 import com.example.emag.model.dto.user.*;
 import com.example.emag.model.entities.User;
@@ -224,5 +225,13 @@ public class UserService extends AbstractService{
     public UserOrderHistoryDTO getOrderHistory(long userid) {
         UserWithoutPassDTO dto = getById(userid);
         return modelMapper.map(dto,UserOrderHistoryDTO.class);
+    }
+    public UserCartDTO getCart(long userid) {
+        UserWithoutPassDTO dto = getById(userid);
+        return modelMapper.map(dto,UserCartDTO.class);
+    }
+    public UserFavoritesDTO getFavorites(long userid) {
+        UserWithoutPassDTO dto = getById(userid);
+        return modelMapper.map(dto,UserFavoritesDTO.class);
     }
 }
