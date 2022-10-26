@@ -1,5 +1,6 @@
 package com.example.emag.service;
 
+import com.example.emag.model.dto.order.OrderWithoutOwnerDTO;
 import com.example.emag.model.dto.user.*;
 import com.example.emag.model.entities.User;
 import com.example.emag.model.exceptions.BadRequestException;
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService extends AbstractService{
@@ -25,7 +27,7 @@ public class UserService extends AbstractService{
         if(user.isPresent()){
             User u = user.get();
             if (password.equals(u.getPassword())){
-                return modelMapper.map(u, UserWithoutPassDTO.class);
+                return transformUserIntoUserWithoutPassDTO(u);
             }
             throw new UnauthorizedException("Wrong credentials!  A");
         }
@@ -48,9 +50,8 @@ public class UserService extends AbstractService{
     }
 
     public void updateUserInfo(UpdateProfileDTO dto, long userID){
-        // todo what if user doesn't exist? -> GoneException
-        // todo fix when no changes -> throw exc
-        User u = userRepository.findById(userID).orElseThrow();
+        User u = userRepository.findById(userID)
+                .orElseThrow(()->new GoneEntityException("No such user!"));
         if (!dto.getEmail().equals(u.getEmail())) {
             checkEmailAvailability(dto.getEmail());
             validateEmail(dto.getEmail());
@@ -179,6 +180,13 @@ public class UserService extends AbstractService{
         loginDTO.setPassword(rdto.getPassword());
         return loginDTO;
     }
+    private UserWithoutPassDTO transformUserIntoUserWithoutPassDTO(User u){
+        UserWithoutPassDTO dto = modelMapper.map(u,UserWithoutPassDTO.class);
+        dto.setPastOrders(u.getPastOrders().stream()
+                .map(o -> modelMapper.map(o, OrderWithoutOwnerDTO.class))
+                .collect(Collectors.toList()));
+        return dto;
+    }
     public User checkCredentials(AdminDTO dto, long userID){
         User u = userRepository.findById(userID).orElseThrow();
         if (!dto.getPassword().equals(u.getPassword())
@@ -203,17 +211,18 @@ public class UserService extends AbstractService{
         }
         return u;
     }
-    public UserWithoutPassDTO getById(Long uid) {
-        try {
-            User u = userRepository.findById(uid).orElseThrow();
-            return modelMapper.map(u,UserWithoutPassDTO.class);
-        } catch (RuntimeException e) {
-            throw new BadRequestException("No such user found");
-        }
-    }
     public boolean checkIfAdminUserId(long uid){
         return userRepository.findById(uid)
                 .orElseThrow(()-> new GoneEntityException("No such user!"))
                 .isAdmin();
+    }
+    public UserWithoutPassDTO getById(Long uid) {
+        User u = userRepository.findById(uid).orElseThrow(() -> new BadRequestException("No such user found"));
+        return transformUserIntoUserWithoutPassDTO(u);
+    }
+
+    public UserOrderHistoryDTO getOrderHistory(long userid) {
+        UserWithoutPassDTO dto = getById(userid);
+        return modelMapper.map(dto,UserOrderHistoryDTO.class);
     }
 }

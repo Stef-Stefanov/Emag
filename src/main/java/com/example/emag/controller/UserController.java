@@ -73,18 +73,23 @@ public class UserController extends AbstractController{
     public void updateUserPass(@RequestBody ChangePassDTO dto, HttpServletRequest req){
         checkIfLogged(req);
         checkIpWithSessionIp(req);
-        userService.updatePass(dto, (long)req.getSession().getAttribute("USER_ID"));
+        userService.updatePass(dto, (long)req.getSession().getAttribute(USER_ID));
     }
     @PutMapping("/upgrade")
     public void giveAdminPrivileges(@RequestBody AdminDTO dto, HttpServletRequest req){
         checkIfLogged(req);
         checkIpWithSessionIp(req);
-        userService.makeAdmin(dto, (long)req.getSession().getAttribute("USER_ID"));
+        userService.makeAdmin(dto, (long)req.getSession().getAttribute(USER_ID));
     }
     @PostMapping("/priv")
     public String lookUpMasterAdminPassword(@RequestBody LoginDTO dto, HttpServletRequest req){
         checkIfLogged(req);
         checkIpWithSessionIp(req);
         return userService.lookUpAdminPassword(dto,(long)req.getSession().getAttribute("USER_ID"));
+    }
+    @GetMapping("/orders/history")
+    public UserOrderHistoryDTO lookUpUserOrderHistory(HttpServletRequest req){
+        checkIfLogged(req);
+        return userService.getOrderHistory((long) req.getSession().getAttribute("USER_ID"));
     }
 }
