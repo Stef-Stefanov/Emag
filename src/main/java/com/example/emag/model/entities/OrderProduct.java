@@ -4,8 +4,9 @@ import lombok.Data;
 
 import javax.persistence.*;
 
-@Entity(name = "orders_have_products")
 @Data
+@Entity(name = "orders_have_products")
+//todo proposed change -> rename class to OrderContent or OrderProductRelation
 public class OrderProduct {
     @EmbeddedId
     private OrderProductKey id;
