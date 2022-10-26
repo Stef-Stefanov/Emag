@@ -33,7 +33,7 @@ public class ProductController extends AbstractController{
     @PostMapping("/products/{pid}/like")
     public LikedProductsDTO likeProduct(@PathVariable int pid, HttpServletRequest req){
         checkIfLogged(req);
-         long uid = getLoggedUserId(req);
+        long uid = getLoggedUserId(req);
         return productService.like(pid,uid);
     }
 

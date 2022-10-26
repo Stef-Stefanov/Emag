@@ -4,9 +4,9 @@ import lombok.Data;
 
 import javax.persistence.*;
 
-@Entity
+
 @Data
-//@Table(name = "user_products_in_cart")
+@Entity(name = "user_products_in_cart")
 public class UserProductsInCart {
     @EmbeddedId
     private UserProductsInCartKey id;
