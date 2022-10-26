@@ -4,6 +4,8 @@ import com.example.emag.model.dto.order.ProductOrderDTO;
 import com.example.emag.model.dto.product.*;
 import com.example.emag.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -82,8 +84,8 @@ public class ProductController extends AbstractController{
     }
 
     @GetMapping("products/search/{word}")
-    public List<ProductDTO> searchByWord(@PathVariable String word){
-        return productService.searchByWord(word);
+    public Page<ProductDTO> searchByWord(@PathVariable String word, Pageable pageable){
+        return productService.searchByWord(word, pageable);
     }
 
 

@@ -1,13 +1,10 @@
 package com.example.emag.service;
 
 import com.example.emag.model.dao.ProductDAO;
-import com.example.emag.model.dto.product.ProductAddDTO;
 import com.example.emag.model.entities.*;
-import com.example.emag.model.exceptions.BadRequestException;
 import com.example.emag.model.exceptions.NotFoundException;
 import com.example.emag.model.repositories.*;
 import com.example.emag.model.util.EmailSender;
-import org.aspectj.weaver.ast.Not;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;

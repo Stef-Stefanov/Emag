@@ -6,7 +6,7 @@ import com.example.emag.model.entities.*;
 import com.example.emag.model.exceptions.BadRequestException;
 import com.example.emag.model.exceptions.NotFoundException;
 import org.apache.commons.io.FilenameUtils;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -171,15 +171,16 @@ public class ProductService extends AbstractService{
         }
     }
 
-    public List<ProductDTO> searchByWord(String word) {
+    public Page<ProductDTO> searchByWord(String word, Pageable pageable) {
         validateWord(word);
         List<Product> products = productRepository.findAllByNameContainingIgnoreCase(word.strip());
+        int start = (int) pageable.getOffset();
+        int end = (Math.min((start + pageable.getPageSize()), products.size()));
+        Page<Product> productPage = new PageImpl<>(products.subList(start , end ) , pageable , products.size());
         if(products.isEmpty()){
             throw new NotFoundException("No products found");
         }
-        //todo pages
-//        PageRequest pr = PageRequest.of(page,size);
-        return products.stream().map(p -> modelMapper.map(p, ProductDTO.class)).collect(Collectors.toList());
+        return productPage.map(p -> modelMapper.map(p, ProductDTO.class));
     }
 
     private void validateWord(String word) {
