@@ -92,10 +92,6 @@ public abstract class AbstractService {
         }
     }
 
-//    protected Product findProductById(long id) {
-//        return productRepository.findById(id).orElseThrow(() -> new NotFoundException("Product not found"));
-//    }
-
     protected Category getCategoryById(long id) {
         return categoryRepository.findById(id).orElseThrow(() -> new NotFoundException("Category not found"));
     }
@@ -134,12 +130,4 @@ public abstract class AbstractService {
             emailSender.sendMessage(user.getEmail(), product);
         }
     }
-
-//    protected void checkIfUserIsAdmin(User user){
-//        if(!user.isAdmin()){
-//            throw new BadRequestException("You are not allowed to perform this action. Must be admin!");
-//        }
-//    }
-
-
 }

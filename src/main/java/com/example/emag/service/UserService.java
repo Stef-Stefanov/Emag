@@ -183,9 +183,14 @@ public class UserService extends AbstractService{
     }
     private UserWithoutPassDTO transformUserIntoUserWithoutPassDTO(User u){
         UserWithoutPassDTO dto = modelMapper.map(u,UserWithoutPassDTO.class);
-        dto.setPastOrders(u.getPastOrders().stream()
-                .map(o -> modelMapper.map(o, OrderWithoutOwnerDTO.class))
-                .collect(Collectors.toList()));
+        if(u.getPastOrders() == null){
+            dto.setPastOrders(null);
+        }
+        else {
+            dto.setPastOrders(u.getPastOrders().stream()
+                    .map(o -> modelMapper.map(o, OrderWithoutOwnerDTO.class))
+                    .collect(Collectors.toList()));
+        }
         return dto;
     }
     public User checkCredentials(AdminDTO dto, long userID){

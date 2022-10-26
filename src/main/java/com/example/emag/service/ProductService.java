@@ -173,7 +173,8 @@ public class ProductService extends AbstractService{
 
     public Page<ProductDTO> searchByWord(String word, Pageable pageable) {
         validateWord(word);
-        List<Product> products = productRepository.findAllByNameContainingIgnoreCase(word.strip());
+        List<Product> products = productRepository.
+                findAllByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(word.strip(), word.strip());
         int start = (int) pageable.getOffset();
         int end = (Math.min((start + pageable.getPageSize()), products.size()));
         Page<Product> productPage = new PageImpl<>(products.subList(start , end ) , pageable , products.size());
@@ -215,7 +216,6 @@ public class ProductService extends AbstractService{
         int end = (Math.min((start + pageable.getPageSize()), products.size()));
         Page<Product> productPage = new PageImpl<>(products.subList(start , end ) , pageable , products.size());
         return productPage.map(p -> modelMapper.map(p, ProductDTO.class));
-        //todo pages
     }
 
     public ProductDTO editDiscount(long productId, long discountId) {
