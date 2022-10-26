@@ -208,21 +208,13 @@ public class ProductService extends AbstractService{
 
     }
 
-    public List<ProductDTO> findAll(boolean sortByPrice, boolean desc) {
-        Sort sort = null;
-        if (sortByPrice) {
-            sort = Sort.by("regularPrice");
-            if (desc) {
-                sort = sort.descending();
-            }
-        }
-        if(sort == null){
-            return productRepository.findAll().stream().map
-                    (p-> modelMapper.map(p, ProductDTO.class)).collect(Collectors.toList());
-        }
-        return productRepository.findAll(sort).
-                stream().map(p-> modelMapper.map(p, ProductDTO.class)).
-                collect(Collectors.toList());
+    public Page<ProductDTO> findAll(Pageable pageable) {
+        Sort sort = pageable.getSort();
+        List<Product> products = productRepository.findAll(sort);
+        int start = (int) pageable.getOffset();
+        int end = (Math.min((start + pageable.getPageSize()), products.size()));
+        Page<Product> productPage = new PageImpl<>(products.subList(start , end ) , pageable , products.size());
+        return productPage.map(p -> modelMapper.map(p, ProductDTO.class));
         //todo pages
     }
 

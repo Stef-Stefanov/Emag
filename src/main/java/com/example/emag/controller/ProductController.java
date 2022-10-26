@@ -100,10 +100,8 @@ public class ProductController extends AbstractController{
 
 
     @GetMapping("products")
-    public List<ProductDTO> getAllProducts(@RequestParam(required = false) boolean sortByPrice,
-                                           @RequestParam(required = false) boolean desc) {
-
-        return productService.findAll(sortByPrice, desc);
+    public Page<ProductDTO> getAllProducts(Pageable pageable) {
+        return productService.findAll(pageable);
     }
 
     @PutMapping("/products/{pid}/discount/{did}")

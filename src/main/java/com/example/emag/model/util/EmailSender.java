@@ -19,7 +19,7 @@ public class EmailSender {
                 product.getDiscount().getDiscountPercentage() +" percent. Current price is now " +
                 (product.getRegularPrice()-(product.getRegularPrice() *
                         ((double)product.getDiscount().getDiscountPercentage()/100)))
-        + ". Limited offer until " + product.getDiscount().getExpireDate());
+        + "$. Limited offer until " + product.getDiscount().getExpireDate());
         javaEmailSender.send(email);
     }
 }
