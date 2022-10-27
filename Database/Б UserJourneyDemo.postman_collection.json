@@ -1,0 +1,696 @@
+{
+	"info": {
+		"_postman_id": "5e5b9291-726c-4f30-9b67-2e30b168c39e",
+		"name": "Б UserJourneyDemo",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "23889354"
+	},
+	"item": [
+		{
+			"name": "1. Login",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"email\":\"\",\r\n\"password\":\"\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8888/auth",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"auth"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "2. Registration",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \t\"email\":\"krasimir.stoev@ittalents.bg\",\r\n\t\t\"password\":\"jN302$\",\r\n\t\t\"confirmPassword\":\"jN302$\",\r\n\t\t\"firstName\":\"Krassimir\",\r\n\t\t\"lastName\":\"Stoev\",\r\n\t\t\"phoneNumber\":\"0888888888\",\r\n\t\t\"birthDate\":\"1995:01:01\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8888/users/DON'T SEND BEFORE DEMO",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"users",
+						"DON'T SEND BEFORE DEMO"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "3.1 get all categories",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Hrani\",\r\n    \"parentCategoryId\": 8\r\n}   ",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8888/categories",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"categories"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "3.2 get category",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8888/categories/3",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"categories",
+						"3"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "3.3 get product by id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8888/products/6",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"products",
+						"6"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "3.4 filter min/max price",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8888/products/filter?min=500&max=1500",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"products",
+						"filter"
+					],
+					"query": [
+						{
+							"key": "min",
+							"value": "500"
+						},
+						{
+							"key": "max",
+							"value": "1500"
+						},
+						{
+							"key": "desc",
+							"value": "true",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "3.5 search by word",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8888/products/search/24GB",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"products",
+						"search",
+						"24GB"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "4.1 get all reviews for product",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8888/reviews/products/8",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"reviews",
+						"products",
+						"8"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "4.2 Add review",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var current_timestamp = new Date();\r",
+							"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"text\" : \"\",\r\n    \"rating\" : 5\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8888/reviews/8",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"reviews",
+						"8"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "4.3 Like a product",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "localhost:8888/products/7/like",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"products",
+						"7",
+						"like"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "4.4 Place product in cart",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "quantity",
+							"value": "10",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:8888/products/7/cart",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"products",
+						"7",
+						"cart"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "4.5 Get User's Cart",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8888/orders/cart",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"orders",
+						"cart"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "4.6 create order",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "localhost:8888/orders/",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"orders",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "4.7 get orders for user",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8888/orders/history",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"orders",
+						"history"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "4.7 edit product Copy",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Iphone 15\",\r\n    \"description\": \"2019 godina\",\r\n    \"regularPrice\": 1730,\r\n    \"quantity\": 1,\r\n    \"categoryId\": 31,\r\n    \"discountId\" : 2\r\n\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8888/products/1",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"products",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "5.1 Update User Data",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"email\":\"sistefanov@abv.bg\",\r\n\"firstName\":\"Stefan\",\r\n\"lastName\":\"Stefanov\",\r\n\"isSubscribed\":true,\r\n\"phoneNumber\":\"0896387677\",\r\n\"birthDate\":\"2020:09:05\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8888/update",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"update"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "5.2 Update password",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"password\":\"123aA@\",\r\n\"newPassword\":\"123aA@123aA@\",\r\n\"confirmNewPassword\":\"123aA@123aA@\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8888/secure",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"secure"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "5.3 Make User Admin",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"isAdmin\":\"true\",\r\n\"password\":\"123aA@\",\r\n\"adminPassword\":\"123\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8888/upgrade",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"upgrade"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "5.4 Logou",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8888/exit",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"exit"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "6.1 Login Admin",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"email\":\"staynov@dr.com\",\r\n\"password\":\"123aA@\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8888/auth",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"auth"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "6.2 Get order history",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8888/orders/history",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"orders",
+						"history"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "6.3 Get User's favorites Copy",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8888/orders/favorites",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"orders",
+						"favorites"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "7.1 add product Copy",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \t\t\"name\": \"Електрически бойлер Tesy BiLight SLIM GCV803820B11TSRC\",\r\n   \t\t    \"description\": \"\",\r\n    \t\t\"regularPrice\": 1200,\r\n    \t\t\"quantity\": 50,\r\n    \t\t\"categoryId\": 2\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8888/products",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"products"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "7.2 edit product Copy",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \t\t\"name\": \"Електрически бойлер Tesy BiLight SLIM GCV803820B11TSRC\",\r\n   \t\t    \"description\": \"2000 W, 80 л, 0.8 Mpa, 34 мм, Защита срещу замръзване\",\r\n    \t\t\"regularPrice\": 1200,\r\n    \t\t\"quantity\": 50,\r\n    \t\t\"categoryId\": 2\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8888/products/1",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"products",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "7.3 add feature Copy",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\" : \"Тип\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8888/features",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"features"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "7.4 add discount Copy",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"discountPercentage\" : 20,\r\n    \"startDate\" : \"2022-11-27T15:53:16\",\r\n    \"expireDate\" : \"2022-12-27T15:53:16\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8888/discounts",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"discounts"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
