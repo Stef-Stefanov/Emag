@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 public class DiscountController extends AbstractController {
     @Autowired
     private DiscountService discountService;
-    @PostMapping("discounts")
+    @PostMapping("/discounts")
     public DiscountResponseDTO addDiscount(@RequestBody DiscountRequestDTO requestDTO, HttpServletRequest req){
         checkIfLogged(req);
         checkIpWithSessionIp(req);
@@ -20,7 +20,7 @@ public class DiscountController extends AbstractController {
         return discountService.add(requestDTO);
     }
 
-    @DeleteMapping("discounts/{id}")
+    @DeleteMapping("/discounts/{id}")
     public DiscountResponseDTO removeDiscount(@PathVariable long id, HttpServletRequest req){
         checkIfLogged(req);
         checkIpWithSessionIp(req);

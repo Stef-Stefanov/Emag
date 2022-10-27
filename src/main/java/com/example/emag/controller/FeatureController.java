@@ -20,7 +20,7 @@ public class FeatureController extends AbstractController {
         return featureService.add(dto);
     }
 
-    @DeleteMapping("features/{fid}")
+    @DeleteMapping("/features/{fid}")
     public FeatureDTO deleteFeature(@PathVariable int fid, HttpServletRequest req){
         checkIfLogged(req);
         checkIpWithSessionIp(req);

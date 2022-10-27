@@ -35,7 +35,7 @@ public class CategoryController extends AbstractController {
         return categoryService.remove(id);
     }
 
-    @PutMapping("categories/{id}")
+    @PutMapping("/categories/{id}")
     public CategoryWithSubcategoryDTO editCategory(@PathVariable long id,
                                                    @RequestBody CategoryRequestDTO dto, HttpServletRequest req){
         checkIfLogged(req);
@@ -44,16 +44,16 @@ public class CategoryController extends AbstractController {
         return categoryService.edit(id, dto);
     }
 
-    @GetMapping("categories/{id}")
+    @GetMapping("/categories/{id}")
     public List<ProductDTO> getAllProductsFromCategory(@PathVariable long id){
         return categoryService.getAllProductsFromCategory(id);
     }
 
-    @GetMapping("categories")
+    @GetMapping("/categories")
     public List<CategoryWithSubcategoryDTO> getAllCategories(){
         return categoryService.getAllCategories();
     }
-    @PostMapping("categories/{cid}/discount/{did}")
+    @PostMapping("/categories/{cid}/discount/{did}")
     public List<ProductDTO> setDiscountForCategory(@PathVariable long cid,
                                                    @PathVariable long did, HttpServletRequest req){
         checkIfLogged(req);

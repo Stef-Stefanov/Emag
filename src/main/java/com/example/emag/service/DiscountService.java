@@ -3,10 +3,13 @@ package com.example.emag.service;
 import com.example.emag.model.dto.discount.DiscountRequestDTO;
 import com.example.emag.model.dto.discount.DiscountResponseDTO;
 import com.example.emag.model.entities.Discount;
+import com.example.emag.model.entities.Product;
 import com.example.emag.model.exceptions.BadRequestException;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class DiscountService extends AbstractService{
@@ -31,11 +34,24 @@ public class DiscountService extends AbstractService{
         }
     }
 
+    @Transactional
     public DiscountResponseDTO remove(long id) {
         Discount discount = getDiscountById(id);
         DiscountResponseDTO dto = new DiscountResponseDTO();
+        checkProductsIfHasThisDiscount(discount);
         modelMapper.map(discount,dto);
         discountRepository.deleteById(id);
         return dto;
+    }
+
+    private void checkProductsIfHasThisDiscount(Discount discount) {
+        List<Product> products = productRepository.findAllByDiscount(discount);
+        if(products.isEmpty()){
+            return;
+        }
+        for(Product product : products){
+            product.setDiscount(null);
+            productRepository.save(product);
+        }
     }
 }

@@ -211,11 +211,8 @@ public class ProductService extends AbstractService{
 
     public Page<ProductDTO> findAll(Pageable pageable) {
         Sort sort = pageable.getSort();
-        List<Product> products = productRepository.findAll(sort);
-        int start = (int) pageable.getOffset();
-        int end = (Math.min((start + pageable.getPageSize()), products.size()));
-        Page<Product> productPage = new PageImpl<>(products.subList(start , end ) , pageable , products.size());
-        return productPage.map(p -> modelMapper.map(p, ProductDTO.class));
+        Page<Product> products = productRepository.findAll(pageable);
+        return products.map(p -> modelMapper.map(p, ProductDTO.class));
     }
 
     public ProductDTO editDiscount(long productId, long discountId) {

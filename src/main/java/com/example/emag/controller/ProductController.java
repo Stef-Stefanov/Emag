@@ -59,14 +59,14 @@ public class ProductController extends AbstractController{
         return productService.addImage(file,pid);
     }
 
-    @PutMapping("products/{pid}")
+    @PutMapping("/products/{pid}")
     public ProductDTO editProduct(@PathVariable long pid,@RequestBody ProductAddDTO dto, HttpServletRequest req){
         checkIfLogged(req);
         checkIpWithSessionIp(req);
         checkIfAdmin(req);
         return productService.edit(pid, dto);
     }
-    @DeleteMapping(value = "products/{pid}", headers = "password=dve")
+    @DeleteMapping(value = "/products/{pid}", headers = "password=dve")
     public ProductWithFeaturesDTO deleteProduct(@PathVariable long pid, HttpServletRequest req){
         checkIfLogged(req);
         checkIpWithSessionIp(req);
@@ -74,7 +74,7 @@ public class ProductController extends AbstractController{
         return productService.deleteById(pid);
     }
 
-    @PostMapping("products/{pid}/features/{fid}")
+    @PostMapping("/products/{pid}/features/{fid}")
     public ProductWithFeaturesDTO addFeatureToProduct(@PathVariable int pid, @PathVariable int fid,
                                                       @RequestParam String value, HttpServletRequest req){
         checkIfLogged(req);
@@ -83,13 +83,13 @@ public class ProductController extends AbstractController{
         return productService.addFeature(pid, fid, value);
     }
 
-    @GetMapping("products/search/{word}")
+    @GetMapping("/products/search/{word}")
     public Page<ProductDTO> searchByWord(@PathVariable String word, Pageable pageable){
         return productService.searchByWord(word, pageable);
     }
 
 
-    @DeleteMapping("products/{pid}/features/{fid}")
+    @DeleteMapping("/products/{pid}/features/{fid}")
     public ProductFeatureDTO removeFeatureOfProduct(@PathVariable int pid,
                                                     @PathVariable int fid, HttpServletRequest req){
         checkIfLogged(req);
@@ -99,7 +99,7 @@ public class ProductController extends AbstractController{
     }
 
 
-    @GetMapping("products")
+    @GetMapping("/products")
     public Page<ProductDTO> getAllProducts(Pageable pageable) {
         return productService.findAll(pageable);
     }
@@ -113,7 +113,7 @@ public class ProductController extends AbstractController{
         return productService.editDiscount(pid, did);
     }
 
-    @DeleteMapping("products/{pid}/images/{iid}")
+    @DeleteMapping("/products/{pid}/images/{iid}")
     public String deleteImage(@PathVariable long pid, @PathVariable long iid,
         @RequestParam String url, HttpServletRequest req){
         checkIfLogged(req);
@@ -122,7 +122,7 @@ public class ProductController extends AbstractController{
       return productService.deleteImage(pid, iid, url);
     }
 
-    @GetMapping("products/filter")
+    @GetMapping("/products/filter")
     public List<ProductQueryDTO> filterProducts(@RequestParam int min, @RequestParam int max,
                                                 @RequestParam(required = false) boolean desc){
         return productService.filterMinMax(min, max, desc);

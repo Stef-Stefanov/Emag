@@ -13,7 +13,7 @@ public class OrderController extends AbstractController{
     @Autowired
     private OrderService orderService;
 
-    @PostMapping("orders")
+    @PostMapping("/orders")
     public MadeOrderDTO makeOrder(HttpServletRequest req){
         checkIfLogged(req);
         long uid = getLoggedUserId(req);

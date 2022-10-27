@@ -13,6 +13,17 @@ public class ProductDAO {
     private JdbcTemplate jdbcTemplate;
 
     public List<ProductQueryDTO> filterMinMaxPrice(int min, int max, boolean desc) {
+
+
+
+//        jdbcTemplate.queryForObject("sql", (rs, rowNum) -> {
+//            ProductQueryDTO dto = new ProductQueryDTO();
+//            //...
+//            //...
+//            return dto;
+//        });
+//
+
         if (desc) {
             return jdbcTemplate.query("SELECT * FROM products WHERE regular_price BETWEEN ? AND ?" +
                             " ORDER BY regular_price desc",
