@@ -29,14 +29,14 @@ public class UserController extends AbstractController{
         return dto;
     }
     @Transactional
-    @DeleteMapping("/end")
+    @DeleteMapping("/users/delete")
     public void deleteUser(@RequestBody LoginDTO dto, HttpServletRequest req){
         checkIfLogged(req);
         checkIpWithSessionIp(req);
         userService.deleteUser(dto, (long) req.getSession().getAttribute("USER_ID"));
         req.getSession().invalidate();
     }
-    @PostMapping("/auth")
+    @PostMapping("/users/login")
     public UserWithoutPassDTO login(@RequestBody LoginDTO dto, HttpServletRequest req){
         if (checkIfLoggedBoolean(req.getSession())){
             throw new BadRequestException("You are already logged in!");
@@ -52,7 +52,7 @@ public class UserController extends AbstractController{
             throw new BadRequestException("Wrong Credentials");
         }
     }
-    @PutMapping("/exit")
+    @PutMapping("/users/logout")
     public void logout(HttpSession s) {
         if (s==null || s.isNew()){
             s.setAttribute("LOGGED",false);
@@ -64,41 +64,41 @@ public class UserController extends AbstractController{
         s.setAttribute("LOGGED",false);
     }
 
-    @PutMapping("/update")
+    @PutMapping("/users/update")
     public void updateUserDate(@RequestBody UpdateProfileDTO dto, HttpServletRequest req){
         checkIfLogged(req);
         checkIpWithSessionIp(req);
         userService.updateUserInfo(dto, (long)req.getSession().getAttribute("USER_ID"));
     }
-    @PutMapping("/secure")
+    @PutMapping("/users/update_pass")
     public void updateUserPass(@RequestBody ChangePassDTO dto, HttpServletRequest req){
         checkIfLogged(req);
         checkIpWithSessionIp(req);
         userService.updatePass(dto, (long)req.getSession().getAttribute(USER_ID));
     }
-    @PutMapping("/upgrade")
+    @PutMapping("/users/admin")
     public void giveAdminPrivileges(@RequestBody AdminDTO dto, HttpServletRequest req){
         checkIfLogged(req);
         checkIpWithSessionIp(req);
         userService.makeAdmin(dto, (long)req.getSession().getAttribute(USER_ID));
     }
-    @PostMapping("/priv")
+    @PostMapping("/admin/pass")
     public String lookUpMasterAdminPassword(@RequestBody LoginDTO dto, HttpServletRequest req){
         checkIfLogged(req);
         checkIpWithSessionIp(req);
         return userService.lookUpAdminPassword(dto,(long)req.getSession().getAttribute("USER_ID"));
     }
-    @GetMapping("/orders/history")
+    @GetMapping("/users/history")
     public UserOrderHistoryDTO lookUpUserOrderHistory(HttpServletRequest req){
         checkIfLogged(req);
         return userService.getOrderHistory((long) req.getSession().getAttribute("USER_ID"));
     }
-    @GetMapping("/orders/cart")
+    @GetMapping("/users/cart")
     public UserCartDTO lookUpUserCart(HttpServletRequest req){
         checkIfLogged(req);
         return userService.getCart((long) req.getSession().getAttribute("USER_ID"));
     }
-    @GetMapping("/orders/favorites")
+    @GetMapping("/users/favorites")
     public UserFavoritesDTO lookUpUserFavorites(HttpServletRequest req){
         checkIfLogged(req);
         return userService.getFavorites((long) req.getSession().getAttribute("USER_ID"));
