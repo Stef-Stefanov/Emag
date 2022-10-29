@@ -14,16 +14,12 @@ public class DiscountController extends AbstractController {
     private DiscountService discountService;
     @PostMapping("/discounts")
     public DiscountResponseDTO addDiscount(@RequestBody DiscountRequestDTO requestDTO, HttpServletRequest req){
-        checkIfLogged(req);
-        checkIpWithSessionIp(req);
         checkIfAdmin(req);
         return discountService.add(requestDTO);
     }
 
     @DeleteMapping("/discounts/{id}")
     public DiscountResponseDTO removeDiscount(@PathVariable long id, HttpServletRequest req){
-        checkIfLogged(req);
-        checkIpWithSessionIp(req);
         checkIfAdmin(req);
         return discountService.remove(id);
     }

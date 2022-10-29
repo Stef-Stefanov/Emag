@@ -61,9 +61,6 @@ public abstract class AbstractController {
     public long getLoggedUserId(HttpServletRequest req){
         HttpSession session = req.getSession();
         String ip = req.getRemoteAddr();
-        System.out.println(session.getAttribute(LOGGED));
-        System.out.println(session.getAttribute(USER_ID));
-        System.out.println(session.getAttribute(REMOTE_IP));
         if(session.getAttribute(LOGGED) == null ||
                 (!(boolean) session.getAttribute(LOGGED)) ||
                 !session.getAttribute(REMOTE_IP).equals(ip)){
@@ -109,7 +106,7 @@ public abstract class AbstractController {
      * @return boolean
      */
     public void checkIpWithSessionIp(HttpServletRequest req) {
-        checkIfLogged(req);
+//        checkIfLogged(req);
         if ( ! req.getRemoteAddr().equals(req.getSession().getAttribute(REMOTE_IP))) {
             req.getSession().invalidate();
             throw new BadRequestException("Possible session high jacking");

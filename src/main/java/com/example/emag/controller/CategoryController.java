@@ -16,21 +16,15 @@ import java.util.List;
 public class CategoryController extends AbstractController {
 
     @Autowired
-    private ModelMapper modelMapper;
-    @Autowired
     private CategoryService categoryService;
     @PostMapping("/categories")
     public CategoryDTO addCategory(@RequestBody CategoryRequestDTO category, HttpServletRequest req){
-        checkIfLogged(req);
-        checkIpWithSessionIp(req);
         checkIfAdmin(req);
         return categoryService.save(category);
     }
 
     @DeleteMapping(value = "/categories/{id}", headers = "password=dve")
     public CategoryDTO deleteCategory(@PathVariable long id, HttpServletRequest req){
-        checkIfLogged(req);
-        checkIpWithSessionIp(req);
         checkIfAdmin(req);
         return categoryService.remove(id);
     }
@@ -38,8 +32,6 @@ public class CategoryController extends AbstractController {
     @PutMapping("/categories/{id}")
     public CategoryWithSubcategoryDTO editCategory(@PathVariable long id,
                                                    @RequestBody CategoryRequestDTO dto, HttpServletRequest req){
-        checkIfLogged(req);
-        checkIpWithSessionIp(req);
         checkIfAdmin(req);
         return categoryService.edit(id, dto);
     }
@@ -56,8 +48,6 @@ public class CategoryController extends AbstractController {
     @PostMapping("/categories/{cid}/discount/{did}")
     public List<ProductDTO> setDiscountForCategory(@PathVariable long cid,
                                                    @PathVariable long did, HttpServletRequest req){
-        checkIfLogged(req);
-        checkIpWithSessionIp(req);
         checkIfAdmin(req);
         return categoryService.setDiscountForCategory(cid, did);
     }

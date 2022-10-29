@@ -26,61 +26,48 @@ public class ProductController extends AbstractController{
     }
     @PostMapping("/products")
     public ProductDTO addProduct(@RequestBody ProductAddDTO p, HttpServletRequest req){
-        checkIfLogged(req);
-        checkIpWithSessionIp(req);
         checkIfAdmin(req);
         return productService.add(p);
     }
 
     @PostMapping("/products/{pid}/like")
     public LikedProductsDTO likeProduct(@PathVariable int pid, HttpServletRequest req){
-        checkIfLogged(req);
         long uid = getLoggedUserId(req);
         return productService.like(pid,uid);
     }
 
     @PostMapping("/products/{pid}/cart")
     public ProductOrderDTO addProductInCart(@PathVariable int pid, HttpServletRequest req, @RequestParam int quantity){
-        checkIfLogged(req);
         long uid = getLoggedUserId(req);
         return productService.addToCart(pid, uid, quantity);
     }
 
     @DeleteMapping("/products/{pid}/cart")
     public ProductOrderDTO removeProductFromCart(@PathVariable int pid, HttpServletRequest req){
-        checkIfLogged(req);
         long uid = getLoggedUserId(req);
         return productService.removeProductFromCart(pid,uid);
     }
 
     @PostMapping("/products/{pid}/image")
     public String addImage(@RequestParam MultipartFile file, @PathVariable long pid, HttpServletRequest req){
-        checkIfLogged(req);
-        checkIpWithSessionIp(req);
         checkIfAdmin(req);
         return productService.addImage(file,pid);
     }
 
     @PutMapping("/products/{pid}")
     public ProductDTO editProduct(@PathVariable long pid,@RequestBody ProductAddDTO dto, HttpServletRequest req){
-        checkIfLogged(req);
-        checkIpWithSessionIp(req);
         checkIfAdmin(req);
         return productService.edit(pid, dto);
     }
     @DeleteMapping(value = "/products/{pid}", headers = "password=dve")
     public ProductWithFeaturesDTO deleteProduct(@PathVariable long pid, HttpServletRequest req){
-        checkIfLogged(req);
-        checkIpWithSessionIp(req);
         checkIfAdmin(req);
         return productService.deleteById(pid);
     }
 
     @PostMapping("/products/{pid}/features/{fid}")
     public ProductWithFeaturesDTO addFeatureToProduct(@PathVariable int pid, @PathVariable int fid,
-                                                      @RequestParam String value, HttpServletRequest req){
-        checkIfLogged(req);
-        checkIpWithSessionIp(req);
+                                                      @RequestParam String value, HttpServletRequest req){;
         checkIfAdmin(req);
         return productService.addFeature(pid, fid, value);
     }
@@ -92,10 +79,8 @@ public class ProductController extends AbstractController{
 
 
     @DeleteMapping("/products/{pid}/features/{fid}")
-    public ProductFeatureDTO removeFeatureOfProduct(@PathVariable int pid,
-                                                    @PathVariable int fid, HttpServletRequest req){
-        checkIfLogged(req);
-        checkIpWithSessionIp(req);
+    public ProductFeatureDTO removeFeatureOfProduct(@PathVariable int pid, @PathVariable int fid,
+                                                    HttpServletRequest req){
         checkIfAdmin(req);
         return productService.deleteFeature(pid, fid);
     }
@@ -109,8 +94,6 @@ public class ProductController extends AbstractController{
     @PutMapping("/products/{pid}/discount/{did}")
     public ProductDTO editProductDiscount(@PathVariable long pid,
                                           @PathVariable long did, HttpServletRequest req) {
-        checkIfLogged(req);
-        checkIpWithSessionIp(req);
         checkIfAdmin(req);
         return productService.editDiscount(pid, did);
     }
@@ -118,8 +101,6 @@ public class ProductController extends AbstractController{
     @DeleteMapping("/products/{pid}/images/{iid}")
     public String deleteImage(@PathVariable long pid, @PathVariable long iid,
         @RequestParam String url, HttpServletRequest req){
-        checkIfLogged(req);
-        checkIpWithSessionIp(req);
         checkIfAdmin(req);
       return productService.deleteImage(pid, iid, url);
     }
@@ -132,12 +113,12 @@ public class ProductController extends AbstractController{
     }
     @GetMapping("/users/cart")
     public UserCartDTO lookUpUserCart(HttpServletRequest req){
-        checkIfLogged(req);
-        return productService.getCart((long) req.getSession().getAttribute("USER_ID"));
+        long uid = getLoggedUserId(req);
+        return productService.getCart(uid);
     }
     @GetMapping("/users/favorites")
     public UserFavoritesDTO lookUpUserFavorites(HttpServletRequest req){
-        checkIfLogged(req);
-        return productService.getFavorites((long) req.getSession().getAttribute("USER_ID"));
+        long uid = getLoggedUserId(req);
+        return productService.getFavorites(uid);
     }
 }

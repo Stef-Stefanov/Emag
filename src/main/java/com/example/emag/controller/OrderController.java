@@ -17,13 +17,12 @@ public class OrderController extends AbstractController{
 
     @PostMapping("/orders")
     public MadeOrderDTO makeOrder(HttpServletRequest req){
-        checkIfLogged(req);
         long uid = getLoggedUserId(req);
         return orderService.makeOrder(uid);
     }
     @GetMapping("/users/history")
     public UserOrderHistoryDTO lookUpUserOrderHistory(HttpServletRequest req){
-        checkIfLogged(req);
-        return orderService.getOrderHistory((long) req.getSession().getAttribute("USER_ID"));
+        long uid = getLoggedUserId(req);
+        return orderService.getOrderHistory(uid);
     }
 }

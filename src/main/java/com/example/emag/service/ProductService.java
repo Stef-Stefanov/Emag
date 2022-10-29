@@ -110,14 +110,14 @@ public class ProductService extends AbstractService{
         return setProductProperties(dto, p);
     }
 
-    private ProductDTO setProductProperties(ProductAddDTO dto, Product p) {
+    private ProductDTO setProductProperties(ProductAddDTO dto, Product product) {
         Category category = getCategoryById(dto.getCategoryId());
-        p.setCategory(category);
-        p.setName(dto.getName());
-        p.setDescription(dto.getDescription());
-        p.setQuantity(dto.getQuantity());
-        p.setRegularPrice(dto.getRegularPrice());
-        return modelMapper.map(productRepository.save(p), ProductDTO.class);
+        product.setCategory(category);
+        product.setName(dto.getName());
+        product.setDescription(dto.getDescription());
+        product.setQuantity(dto.getQuantity());
+        product.setRegularPrice(dto.getRegularPrice());
+        return modelMapper.map(productRepository.save(product), ProductDTO.class);
     }
 
     public ProductOrderDTO removeProductFromCart(long pid, long uid) {
@@ -157,17 +157,17 @@ public class ProductService extends AbstractService{
         }
     }
 
-    private void validateProduct(ProductAddDTO p) {
-        if(p.getName().length() > 255 || p.getName().strip().length() < 1){
+    private void validateProduct(ProductAddDTO dto) {
+        if(dto.getName().length() > 255 || dto.getName().strip().length() < 1){
             throw new BadRequestException("Product name size is not valid");
         }
-        if(p.getRegularPrice() <= 0){
+        if(dto.getRegularPrice() <= 0){
             throw new BadRequestException("Price must be positive");
         }
-        if(p.getQuantity() <= 0){
+        if(dto.getQuantity() <= 0){
             throw new BadRequestException("Quantity must be positive");
         }
-        if(p.getQuantity() > 100){
+        if(dto.getQuantity() > 100){
             throw new BadRequestException("Max quantity is 100");
         }
     }
@@ -247,13 +247,13 @@ public class ProductService extends AbstractService{
         return productDAO.filterMinMaxPrice(min, max, desc, pageable);
     }
 
-    public UserCartDTO getCart(long userId) {
-        UserWithoutPassDTO dto = modelMapper.map(getUserById(userId), UserWithoutPassDTO.class);
+    public UserCartDTO getCart(long uid) {
+        UserWithoutPassDTO dto = modelMapper.map(getUserById(uid), UserWithoutPassDTO.class);
         return modelMapper.map(dto,UserCartDTO.class);
     }
 
-    public UserFavoritesDTO getFavorites(long userId) {
-        UserWithoutPassDTO dto = modelMapper.map(getUserById(userId), UserWithoutPassDTO.class);
+    public UserFavoritesDTO getFavorites(long uid) {
+        UserWithoutPassDTO dto = modelMapper.map(getUserById(uid), UserWithoutPassDTO.class);
         return modelMapper.map(dto,UserFavoritesDTO.class);
     }
 }

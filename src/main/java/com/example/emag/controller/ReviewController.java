@@ -24,7 +24,6 @@ public class ReviewController extends AbstractController {
     @PostMapping("/reviews/{pid}")
     public ReviewResponseDTO addReview(@RequestBody ReviewRequestDTO dto, HttpServletRequest req,
                                        @PathVariable long pid) {
-        checkIfLogged(req);
         long uid = getLoggedUserId(req);
         return reviewService.add(dto, uid, pid);
     }
@@ -41,7 +40,6 @@ public class ReviewController extends AbstractController {
 
     @DeleteMapping("/reviews/{rid}")
     public ReviewResponseDTO deleteReview(@PathVariable long rid, HttpServletRequest req){
-        checkIfLogged(req);
         long uid = getLoggedUserId(req);
         return reviewService.deleteReview(rid, uid);
     }

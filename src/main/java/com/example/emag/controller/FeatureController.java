@@ -14,16 +14,12 @@ public class FeatureController extends AbstractController {
     private FeatureService featureService;
     @PostMapping("/features")
     public FeatureDTO addFeature(@RequestBody FeatureDTO dto, HttpServletRequest req){
-        checkIfLogged(req);
-        checkIpWithSessionIp(req);
         checkIfAdmin(req);
         return featureService.add(dto);
     }
 
     @DeleteMapping("/features/{fid}")
     public FeatureDTO deleteFeature(@PathVariable int fid, HttpServletRequest req){
-        checkIfLogged(req);
-        checkIpWithSessionIp(req);
         checkIfAdmin(req);
         return featureService.delete(fid);
     }
