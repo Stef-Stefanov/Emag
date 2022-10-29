@@ -1,5 +1,6 @@
 package com.example.emag.service;
 
+import com.example.emag.model.dto.cart.UserHasProductsInCardWithoutUserIdDTO;
 import com.example.emag.model.dto.order.OrderWithoutOwnerDTO;
 import com.example.emag.model.dto.user.*;
 import com.example.emag.model.entities.User;
@@ -181,7 +182,7 @@ public class UserService extends AbstractService{
     private LoginDTO transformRegisterDtoIntoLoginDto(RegisterDTO rdto){
         LoginDTO loginDTO = new LoginDTO();
         loginDTO.setEmail(rdto.getEmail());
-        loginDTO.setPassword(rdto.getConfirmPassword());
+        loginDTO.setPassword(rdto.getPassword());
         return loginDTO;
     }
     private UserWithoutPassDTO transformUserIntoUserWithoutPassDTO(User u){
@@ -196,30 +197,30 @@ public class UserService extends AbstractService{
         }
         return dto;
     }
-    // todo merge into one method and rename!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     public User checkCredentials(AdminDTO dto, long userID){
-        User u = userRepository.findById(userID).orElseThrow(() -> new GoneEntityException("No such user!"));
-        if (!passwordEncoder.matches(dto.getPassword(), u.getPassword())) {
+        User u = userRepository.findById(userID).orElseThrow();
+        if (!dto.getPassword().equals(u.getPassword())
+                && !dto.getPassword().equals(u.getPassword())){
             throw new UnauthorizedException("Wrong credentials! D");
         }
         return u;
     }
     public User checkCredentials(LoginDTO dto, long userID){
         User u = userRepository.findById(userID).orElseThrow();
-        if ( ! (passwordEncoder.matches(dto.getPassword(), u.getPassword())
-                && dto.getEmail().equals(u.getEmail()))){
+        if (!dto.getPassword().equals(u.getPassword())
+                && !dto.getEmail().equals(u.getEmail())){
             throw new UnauthorizedException("Wrong credentials! D");
         }
         return u;
     }
     public User checkCredentials(ChangePassDTO dto, long userID){
         User u = userRepository.findById(userID).orElseThrow();
-        if (!passwordEncoder.matches(dto.getPassword(), u.getPassword())) {
+        if (!dto.getPassword().equals(u.getPassword())
+                && !dto.getPassword().equals(u.getPassword())){
             throw new UnauthorizedException("Wrong credentials! D");
         }
         return u;
     }
-    // todo merge into one method and rename!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     public boolean checkIfAdminUserId(long uid){
         return userRepository.findById(uid)
                 .orElseThrow(()-> new GoneEntityException("No such user!"))
