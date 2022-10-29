@@ -13,22 +13,21 @@ public class AbstractServiceInterceptor implements HandlerInterceptor {
     public boolean preHandle
             (HttpServletRequest request, HttpServletResponse response, Object handler) {
         // exactly two hours!.
-        System.out.println("I amm here!");
         request.getSession().setMaxInactiveInterval(2*60*60);
-        // todo
+        // todo remove
         return true;
     }
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response,
                            Object handler, ModelAndView modelAndView) throws Exception {
-
-        System.out.println("Post Handle method is Calling");
+//          todo remove if unused
+//        System.out.println("Post Handle method is Calling");
     }
     @Override
     public void afterCompletion
             (HttpServletRequest request, HttpServletResponse response, Object
                     handler, Exception exception) throws Exception {
-
-        System.out.println("Request and Response is completed");
+//       todo remove if unused
+//        System.out.println("Request and Response is completed");
     }
 }
