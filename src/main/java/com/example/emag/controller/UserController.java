@@ -17,16 +17,16 @@ import javax.servlet.http.HttpSession;
 public class UserController extends AbstractController{
 
     @PostMapping("/users")
-    public RegisterDTO registerUser(@RequestBody RegisterDTO dto, HttpServletRequest req){
+    public UserWithoutPassDTO registerUser(@RequestBody RegisterDTO dto, HttpServletRequest req){
         if (checkIfLoggedBoolean(req.getSession())){
             throw new BadRequestException("You are already logged in");
         }
         if(!dto.getPassword().equals(dto.getConfirmPassword())){
             throw new BadRequestException("Passwords mismatch!");
         }
-        User result = userService.registerUser(dto);
-        logUser(req, result.getId());
-        return dto;
+        UserWithoutPassDTO withoutPassDTO = userService.registerUser(dto);
+        logUser(req, withoutPassDTO.getId());
+        return withoutPassDTO;
     }
     @Transactional
     @DeleteMapping("/users/delete")
@@ -54,23 +54,16 @@ public class UserController extends AbstractController{
     }
     @PutMapping("/users/logout")
     public void logout(HttpSession s) {
-        if (s==null || s.isNew()){
-            s.setAttribute("LOGGED",false);
-            throw new UnauthorizedException("You are not logged in! A");
-        }
-        if (!(boolean) s.getAttribute("LOGGED")){
-            throw new UnauthorizedException("You are not logged in! B");
-        }
-        s.setAttribute("LOGGED",false);
+        s.invalidate();
     }
 
-    @PutMapping("/users/update")
+    @PutMapping("/users/edit")
     public void updateUserDate(@RequestBody UpdateProfileDTO dto, HttpServletRequest req){
         checkIfLogged(req);
         checkIpWithSessionIp(req);
         userService.updateUserInfo(dto, (long)req.getSession().getAttribute("USER_ID"));
     }
-    @PutMapping("/users/update_pass")
+    @PutMapping("/users/editPass")
     public void updateUserPass(@RequestBody ChangePassDTO dto, HttpServletRequest req){
         checkIfLogged(req);
         checkIpWithSessionIp(req);
