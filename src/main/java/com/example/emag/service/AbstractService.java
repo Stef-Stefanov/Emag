@@ -9,6 +9,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -46,6 +47,8 @@ public abstract class AbstractService {
     protected ProductDAO productDAO;
     @Autowired
     protected EmailSender emailSender;
+    @Autowired
+    protected PasswordEncoder passwordEncoder;
     protected static String adminPassword = "123";
 
     /**

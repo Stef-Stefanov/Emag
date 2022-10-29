@@ -1,6 +1,5 @@
 package com.example.emag.service;
 
-import com.example.emag.model.dto.cart.UserHasProductsInCardWithoutUserIdDTO;
 import com.example.emag.model.dto.order.OrderWithoutOwnerDTO;
 import com.example.emag.model.dto.user.*;
 import com.example.emag.model.entities.User;
@@ -20,34 +19,37 @@ import java.util.stream.Collectors;
 public class UserService extends AbstractService{
     public UserWithoutPassDTO loginUser(LoginDTO dto) {
         String email = dto.getEmail();
-        String password = dto.getPassword();
-        if(!validateEmail(email) || !validatePassword(password)){
+
+        if( ! validateEmail(email) || ! validatePassword(dto.getPassword())){
             throw new BadRequestException("Wrong credentials");
         }
-        Optional<User> user = userRepository.findByEmail(email);
-        if(user.isPresent()){
-            User u = user.get();
-            if (password.equals(u.getPassword())){
-                return transformUserIntoUserWithoutPassDTO(u);
-            }
-            throw new UnauthorizedException("Wrong credentials!  A");
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UnauthorizedException("Wrong credentials!  B"));
+
+        if (passwordEncoder.matches(dto.getPassword(),user.getPassword())){
+            return transformUserIntoUserWithoutPassDTO(user);
         }
-        else{
-            throw new UnauthorizedException("Wrong credentials!  B");
-        }
+        throw new UnauthorizedException("Wrong credentials!  A");
     }
+
     @Transactional
-    public User registerUser(RegisterDTO dto){
-        checkEmailAvailability(dto.getEmail());
-        LoginDTO loginDTO = transformRegisterDtoIntoLoginDto(dto);
+    public UserWithoutPassDTO registerUser(RegisterDTO dto){
+
         validate(dto);
+        checkEmailAvailability(dto.getEmail());
+
+        dto.setPassword(passwordEncoder.encode(dto.getPassword()));
+
         User result = modelMapper.map(dto, User.class);
         result.setSubscribed(true);
         result.setAdmin(false);
         result.setCreatedAt(LocalDateTime.now());
         userRepository.save(result);
-        loginUser(loginDTO);
-        return result;
+
+        LoginDTO loginDTO = transformRegisterDtoIntoLoginDto(dto);
+
+        return loginUser(loginDTO);
     }
 
     public void updateUserInfo(UpdateProfileDTO dto, long userID){
@@ -71,17 +73,19 @@ public class UserService extends AbstractService{
         userRepository.save(u);
     }
     public void updatePass(ChangePassDTO dto, long userID){
-        if (!dto.getNewPassword().equals(dto.getConfirmNewPassword())) {
+        if ( ! dto.getNewPassword().equals(dto.getConfirmNewPassword())) {
             throw new BadRequestException("New password mismatch");
         }
         validatePassword(dto.getNewPassword());
         User u = checkCredentials(dto,userID);
-        u.setPassword(dto.getNewPassword());
+        u.setPassword(passwordEncoder.encode(dto.getNewPassword()));
         userRepository.save(u);
     }
 
     public void makeAdmin(AdminDTO dto, long userID){
+
         User u = checkCredentials(dto, userID);
+
         if (! dto.getAdminPassword().equals(adminPassword)) {
             throw new UnauthorizedException("Wrong credentials! Q");
         }
@@ -94,9 +98,11 @@ public class UserService extends AbstractService{
         if (!u.isAdmin()){
             throw new UnauthorizedException("You are not an administrator!");
         }
-        //todo needs to be crypted with IP
         return adminPassword;
+        // Additionally the pass can be encrypted alongside the user IP for increased security,
+        // so that the password can be shared only with users on the same network.
     }
+
 
     public void deleteUser(LoginDTO dto, long userID) {
         if (!checkLoginCredentialsToUserID(dto.getEmail(), userID)) {
@@ -178,7 +184,7 @@ public class UserService extends AbstractService{
     private LoginDTO transformRegisterDtoIntoLoginDto(RegisterDTO rdto){
         LoginDTO loginDTO = new LoginDTO();
         loginDTO.setEmail(rdto.getEmail());
-        loginDTO.setPassword(rdto.getPassword());
+        loginDTO.setPassword(rdto.getConfirmPassword());
         return loginDTO;
     }
     private UserWithoutPassDTO transformUserIntoUserWithoutPassDTO(User u){
@@ -193,30 +199,30 @@ public class UserService extends AbstractService{
         }
         return dto;
     }
+    // todo merge into one method and rename!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     public User checkCredentials(AdminDTO dto, long userID){
-        User u = userRepository.findById(userID).orElseThrow();
-        if (!dto.getPassword().equals(u.getPassword())
-                && !dto.getPassword().equals(u.getPassword())){
+        User u = userRepository.findById(userID).orElseThrow(() -> new GoneEntityException("No such user!"));
+        if (!passwordEncoder.matches(dto.getPassword(), u.getPassword())) {
             throw new UnauthorizedException("Wrong credentials! D");
         }
         return u;
     }
     public User checkCredentials(LoginDTO dto, long userID){
         User u = userRepository.findById(userID).orElseThrow();
-        if (!dto.getPassword().equals(u.getPassword())
-                && !dto.getEmail().equals(u.getEmail())){
+        if ( ! (passwordEncoder.matches(dto.getPassword(), u.getPassword())
+                && dto.getEmail().equals(u.getEmail()))){
             throw new UnauthorizedException("Wrong credentials! D");
         }
         return u;
     }
     public User checkCredentials(ChangePassDTO dto, long userID){
         User u = userRepository.findById(userID).orElseThrow();
-        if (!dto.getPassword().equals(u.getPassword())
-                && !dto.getPassword().equals(u.getPassword())){
+        if (!passwordEncoder.matches(dto.getPassword(), u.getPassword())) {
             throw new UnauthorizedException("Wrong credentials! D");
         }
         return u;
     }
+    // todo merge into one method and rename!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     public boolean checkIfAdminUserId(long uid){
         return userRepository.findById(uid)
                 .orElseThrow(()-> new GoneEntityException("No such user!"))

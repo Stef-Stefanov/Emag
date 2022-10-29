@@ -1,8 +1,10 @@
 package com.example.emag.controller;
 
 import com.example.emag.model.dto.order.MadeOrderDTO;
+import com.example.emag.model.dto.user.UserOrderHistoryDTO;
 import com.example.emag.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,5 +20,10 @@ public class OrderController extends AbstractController{
         checkIfLogged(req);
         long uid = getLoggedUserId(req);
         return orderService.makeOrder(uid);
+    }
+    @GetMapping("/users/history")
+    public UserOrderHistoryDTO lookUpUserOrderHistory(HttpServletRequest req){
+        checkIfLogged(req);
+        return userService.getOrderHistory((long) req.getSession().getAttribute("USER_ID"));
     }
 }

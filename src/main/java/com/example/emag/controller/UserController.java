@@ -15,28 +15,28 @@ import javax.servlet.http.HttpSession;
 
 @RestController
 public class UserController extends AbstractController{
-
+    // todo махни тази проверка
     @PostMapping("/users")
-    public RegisterDTO registerUser(@RequestBody RegisterDTO dto, HttpServletRequest req){
+    public UserWithoutPassDTO registerUser(@RequestBody RegisterDTO dto, HttpServletRequest req){
         if (checkIfLoggedBoolean(req.getSession())){
             throw new BadRequestException("You are already logged in");
         }
         if(!dto.getPassword().equals(dto.getConfirmPassword())){
             throw new BadRequestException("Passwords mismatch!");
         }
-        User result = userService.registerUser(dto);
-        logUser(req, result.getId());
-        return dto;
+        UserWithoutPassDTO withoutPassDTO = userService.registerUser(dto);
+        logUser(req, withoutPassDTO.getId());
+        return withoutPassDTO;
     }
     @Transactional
-    @DeleteMapping("/end")
+    @DeleteMapping("/users/delete")
     public void deleteUser(@RequestBody LoginDTO dto, HttpServletRequest req){
         checkIfLogged(req);
         checkIpWithSessionIp(req);
         userService.deleteUser(dto, (long) req.getSession().getAttribute("USER_ID"));
         req.getSession().invalidate();
     }
-    @PostMapping("/auth")
+    @PostMapping("/users/login")
     public UserWithoutPassDTO login(@RequestBody LoginDTO dto, HttpServletRequest req){
         if (checkIfLoggedBoolean(req.getSession())){
             throw new BadRequestException("You are already logged in!");
@@ -52,55 +52,33 @@ public class UserController extends AbstractController{
             throw new BadRequestException("Wrong Credentials");
         }
     }
-    @PutMapping("/exit")
+    @PutMapping("/users/logout")
     public void logout(HttpSession s) {
-        if (s==null || s.isNew()){
-            s.setAttribute("LOGGED",false);
-            throw new UnauthorizedException("You are not logged in! A");
-        }
-        if (!(boolean) s.getAttribute("LOGGED")){
-            throw new UnauthorizedException("You are not logged in! B");
-        }
-        s.setAttribute("LOGGED",false);
+        s.invalidate();
     }
 
-    @PutMapping("/update")
+    @PutMapping("/users/edit")
     public void updateUserDate(@RequestBody UpdateProfileDTO dto, HttpServletRequest req){
         checkIfLogged(req);
         checkIpWithSessionIp(req);
         userService.updateUserInfo(dto, (long)req.getSession().getAttribute("USER_ID"));
     }
-    @PutMapping("/secure")
+    @PutMapping("/users/editPass")
     public void updateUserPass(@RequestBody ChangePassDTO dto, HttpServletRequest req){
         checkIfLogged(req);
         checkIpWithSessionIp(req);
         userService.updatePass(dto, (long)req.getSession().getAttribute(USER_ID));
     }
-    @PutMapping("/upgrade")
+    @PutMapping("/users/admin")
     public void giveAdminPrivileges(@RequestBody AdminDTO dto, HttpServletRequest req){
         checkIfLogged(req);
         checkIpWithSessionIp(req);
         userService.makeAdmin(dto, (long)req.getSession().getAttribute(USER_ID));
     }
-    @PostMapping("/priv")
+    @PostMapping("/admin/pass")
     public String lookUpMasterAdminPassword(@RequestBody LoginDTO dto, HttpServletRequest req){
         checkIfLogged(req);
         checkIpWithSessionIp(req);
         return userService.lookUpAdminPassword(dto,(long)req.getSession().getAttribute("USER_ID"));
-    }
-    @GetMapping("/orders/history")
-    public UserOrderHistoryDTO lookUpUserOrderHistory(HttpServletRequest req){
-        checkIfLogged(req);
-        return userService.getOrderHistory((long) req.getSession().getAttribute("USER_ID"));
-    }
-    @GetMapping("/orders/cart")
-    public UserCartDTO lookUpUserCart(HttpServletRequest req){
-        checkIfLogged(req);
-        return userService.getCart((long) req.getSession().getAttribute("USER_ID"));
-    }
-    @GetMapping("/orders/favorites")
-    public UserFavoritesDTO lookUpUserFavorites(HttpServletRequest req){
-        checkIfLogged(req);
-        return userService.getFavorites((long) req.getSession().getAttribute("USER_ID"));
     }
 }

@@ -21,7 +21,6 @@ import java.util.Properties;
 public abstract class AbstractController {
     @Autowired
     protected UserService userService;
-    private UserRepository userRepository;
     public static final String LOGGED = "LOGGED";
     public static final String USER_ID = "USER_ID";
     public static final String REMOTE_IP = "REMOTE_IP";
