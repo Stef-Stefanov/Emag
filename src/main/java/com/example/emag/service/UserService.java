@@ -78,13 +78,16 @@ public class UserService extends AbstractService{
             throw new BadRequestException("New password mismatch");
         }
         validatePassword(dto.getNewPassword());
-        User u = checkCredentials(dto,userID);
+        User u = checkCredentials(dto.getPassword(),userID);
         u.setPassword(passwordEncoder.encode(dto.getNewPassword()));
         userRepository.save(u);
     }
 
+
     public void makeAdmin(AdminDTO dto, long userID){
-        User u = checkCredentials(dto, userID);
+
+        User u = checkCredentials(dto.getPassword(), userID);
+
         if (! dto.getAdminPassword().equals(adminPassword)) {
             throw new UnauthorizedException("Wrong credentials! Q");
         }
@@ -197,13 +200,6 @@ public class UserService extends AbstractService{
         return dto;
     }
     // todo merge into one method and rename!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    public User checkCredentials(AdminDTO dto, long userID){
-        User u = userRepository.findById(userID).orElseThrow(() -> new GoneEntityException("No such user!"));
-        if (!passwordEncoder.matches(dto.getPassword(), u.getPassword())) {
-            throw new UnauthorizedException("Wrong credentials! D");
-        }
-        return u;
-    }
     public User checkCredentials(LoginDTO dto, long userID){
         User u = userRepository.findById(userID).orElseThrow();
         if ( ! (passwordEncoder.matches(dto.getPassword(), u.getPassword())
@@ -212,9 +208,9 @@ public class UserService extends AbstractService{
         }
         return u;
     }
-    public User checkCredentials(ChangePassDTO dto, long userID){
+    public User checkCredentials(String pass, long userID){
         User u = userRepository.findById(userID).orElseThrow();
-        if (!passwordEncoder.matches(dto.getPassword(), u.getPassword())) {
+        if (!passwordEncoder.matches(pass, u.getPassword())) {
             throw new UnauthorizedException("Wrong credentials! D");
         }
         return u;
