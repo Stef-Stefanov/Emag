@@ -75,7 +75,7 @@ public abstract class AbstractController {
         session.setAttribute(USER_ID, id);
         session.setAttribute(REMOTE_IP, req.getRemoteAddr());
     }
-    protected void checkIfLogged(HttpServletRequest req){
+    private void checkIfLogged(HttpServletRequest req){
         HttpSession session = req.getSession();
         if (session.isNew()){
             session.setAttribute(LOGGED,false);
@@ -92,9 +92,13 @@ public abstract class AbstractController {
         }
         return (boolean) s.getAttribute(LOGGED);
     }
-    public void checkIfAdmin(HttpServletRequest req){
+    public long validateSession(HttpServletRequest req){
         checkIfLogged(req);
         checkIpWithSessionIp(req);
+        return (long )req.getSession().getAttribute(USER_ID);
+    }
+    public void checkIfAdmin(HttpServletRequest req){
+        validateSession(req);
         if ( ! userService.checkIfAdminUserId((long) req.getSession().getAttribute("USER_ID"))){
             throw new UnauthorizedException("You are not an administrator!");
         }
@@ -105,8 +109,7 @@ public abstract class AbstractController {
      * @param  req HttpServletRequest
      * @return boolean
      */
-    public void checkIpWithSessionIp(HttpServletRequest req) {
-//        checkIfLogged(req);
+    private void checkIpWithSessionIp(HttpServletRequest req) {
         if ( ! req.getRemoteAddr().equals(req.getSession().getAttribute(REMOTE_IP))) {
             req.getSession().invalidate();
             throw new BadRequestException("Possible session high jacking");

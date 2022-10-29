@@ -45,10 +45,10 @@ public class ReviewController extends AbstractController {
     }
 
     @PutMapping("/reviews/{rid}")
-    public ReviewResponseDTO editReview(@PathVariable long rid, HttpServletRequest request,
+    public ReviewResponseDTO editReview(@PathVariable long rid, HttpServletRequest req,
                                         @RequestBody ReviewRequestDTO dto){
-        checkIfLogged(request);
-        long uid = getLoggedUserId(request);
+        validateSession(req);
+        long uid = getLoggedUserId(req);
         return reviewService.editReview(rid, uid, dto);
     }
 }

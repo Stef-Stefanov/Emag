@@ -31,8 +31,7 @@ public class UserController extends AbstractController{
     @Transactional
     @DeleteMapping("/users/delete")
     public void deleteUser(@RequestBody LoginDTO dto, HttpServletRequest req){
-        checkIfLogged(req);
-        checkIpWithSessionIp(req);
+        validateSession(req);
         userService.deleteUser(dto, (long) req.getSession().getAttribute("USER_ID"));
         req.getSession().invalidate();
     }
@@ -43,9 +42,9 @@ public class UserController extends AbstractController{
         }
         UserWithoutPassDTO result = userService.loginUser(dto);
         if(result != null){
-            req.getSession().setAttribute("LOGGED", true);
-            req.getSession().setAttribute("USER_ID", result.getId());
-            req.getSession().setAttribute("REMOTE_IP", req.getRemoteAddr());
+            req.getSession().setAttribute(LOGGED, true);
+            req.getSession().setAttribute(USER_ID, result.getId());
+            req.getSession().setAttribute(REMOTE_IP, req.getRemoteAddr());
             return result;
         }
         else{
@@ -59,26 +58,22 @@ public class UserController extends AbstractController{
 
     @PutMapping("/users/edit")
     public void updateUserDate(@RequestBody UpdateProfileDTO dto, HttpServletRequest req){
-        checkIfLogged(req);
-        checkIpWithSessionIp(req);
+        validateSession(req);
         userService.updateUserInfo(dto, (long)req.getSession().getAttribute("USER_ID"));
     }
     @PutMapping("/users/editPass")
     public void updateUserPass(@RequestBody ChangePassDTO dto, HttpServletRequest req){
-        checkIfLogged(req);
-        checkIpWithSessionIp(req);
+        validateSession(req);
         userService.updatePass(dto, (long)req.getSession().getAttribute(USER_ID));
     }
     @PutMapping("/users/admin")
     public void giveAdminPrivileges(@RequestBody AdminDTO dto, HttpServletRequest req){
-        checkIfLogged(req);
-        checkIpWithSessionIp(req);
+        validateSession(req);
         userService.makeAdmin(dto, (long)req.getSession().getAttribute(USER_ID));
     }
     @PostMapping("/admin/pass")
     public String lookUpMasterAdminPassword(@RequestBody LoginDTO dto, HttpServletRequest req){
-        checkIfLogged(req);
-        checkIpWithSessionIp(req);
+        validateSession(req);
         return userService.lookUpAdminPassword(dto,(long)req.getSession().getAttribute("USER_ID"));
     }
 }

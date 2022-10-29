@@ -1,6 +1,6 @@
 package com.example.emag.service;
 
-import com.example.emag.model.dto.order.MadeOrderDTO;
+import com.example.emag.model.dto.order.MakeOrderDTO;
 import com.example.emag.model.dto.order.ProductOrderDTO;
 import com.example.emag.model.dto.user.UserOrderHistoryDTO;
 import com.example.emag.model.dto.user.UserWithoutPassDTO;
@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @Service
 public class OrderService extends AbstractService{
     @Transactional 
-    public MadeOrderDTO makeOrder(long uid) {
+    public MakeOrderDTO makeOrder(long uid) {
         User user = getUserById(uid);
         Order order = new Order();
         double totalPrice = 0;
@@ -29,8 +29,8 @@ public class OrderService extends AbstractService{
         return setMadeOrderDTO(user, order, productsInCartList);
     }
 
-    private MadeOrderDTO setMadeOrderDTO(User user, Order order, List<UserProductsInCart> productsInCartList) {
-        MadeOrderDTO dto = new MadeOrderDTO();
+    private MakeOrderDTO setMadeOrderDTO(User user, Order order, List<UserProductsInCart> productsInCartList) {
+        MakeOrderDTO dto = new MakeOrderDTO();
         dto.setFirstName(user.getFirstName());
         dto.setTotalPrice(order.getPrice());
         dto.setProducts(productsInCartList.stream().map(productsInCart ->

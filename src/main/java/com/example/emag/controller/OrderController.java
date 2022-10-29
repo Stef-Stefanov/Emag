@@ -1,6 +1,6 @@
 package com.example.emag.controller;
 
-import com.example.emag.model.dto.order.MadeOrderDTO;
+import com.example.emag.model.dto.order.MakeOrderDTO;
 import com.example.emag.model.dto.user.UserOrderHistoryDTO;
 import com.example.emag.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,12 +16,13 @@ public class OrderController extends AbstractController{
     private OrderService orderService;
 
     @PostMapping("/orders")
-    public MadeOrderDTO makeOrder(HttpServletRequest req){
+    public MakeOrderDTO makeOrder(HttpServletRequest req){
         long uid = getLoggedUserId(req);
         return orderService.makeOrder(uid);
     }
     @GetMapping("/users/history")
     public UserOrderHistoryDTO lookUpUserOrderHistory(HttpServletRequest req){
+        validateSession(req);
         long uid = getLoggedUserId(req);
         return orderService.getOrderHistory(uid);
     }
