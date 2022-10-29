@@ -3,6 +3,7 @@ package com.example.emag.model.entities;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -30,7 +31,7 @@ public class User {
     @Column
     private String phoneNumber;
     @Column
-    private String birthDate;
+    private LocalDate birthDate;
 
 
     @ManyToMany

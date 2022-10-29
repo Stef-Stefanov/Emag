@@ -9,6 +9,7 @@ import com.example.emag.model.exceptions.UnauthorizedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -83,9 +84,7 @@ public class UserService extends AbstractService{
     }
 
     public void makeAdmin(AdminDTO dto, long userID){
-
         User u = checkCredentials(dto, userID);
-
         if (! dto.getAdminPassword().equals(adminPassword)) {
             throw new UnauthorizedException("Wrong credentials! Q");
         }
@@ -158,10 +157,8 @@ public class UserService extends AbstractService{
      Todo needs to implement correct date and time logic -> no 32 of month 13.
      Also year needs to be after 1723 as sql doesn't support older years.
     */
-    private boolean validateBirthDate(String string){
-        Pattern pattern = Pattern.compile("(?<y>[0-9]{4})([:\\-_])(?<m>[0-9]{2})\\2(?<d>[0-9]{2})");
-        Matcher matcher = pattern.matcher(string);
-        if (!matcher.find()) {
+    private boolean validateBirthDate(LocalDate birthDate){
+        if (birthDate.getYear() < 1800 || birthDate.getYear() > 2100 || birthDate.isAfter(LocalDate.now())) {
             throw new BadRequestException("Date of birth is not compliant");
         }
         return true;

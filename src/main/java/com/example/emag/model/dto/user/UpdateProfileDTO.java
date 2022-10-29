@@ -3,6 +3,8 @@ package com.example.emag.model.dto.user;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
+import java.time.LocalDate;
+
 @Data
 public class UpdateProfileDTO {
 
@@ -19,6 +21,6 @@ public class UpdateProfileDTO {
     @JsonProperty
     private boolean isSubscribed;
     private String phoneNumber;
-    private String birthDate;
+    private LocalDate birthDate;
 
 }

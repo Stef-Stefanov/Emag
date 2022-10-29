@@ -5,6 +5,7 @@ import com.example.emag.model.dto.order.OrderWithoutOwnerDTO;
 import com.example.emag.model.dto.product.ProductDTO;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -18,7 +19,7 @@ public class UserWithoutPassDTO {
     private int isSubscribed;
     private int isAdmin;
     private String phoneNumber;
-    private String birthDate;
+    private LocalDate birthDate;
     private List<ProductDTO> likedProducts;
     private List<UserHasProductsInCardWithoutUserIdDTO> productsInCart;
     private List<OrderWithoutOwnerDTO> pastOrders;
