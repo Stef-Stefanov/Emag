@@ -2,6 +2,8 @@ package com.example.emag.controller;
 
 import com.example.emag.model.dto.order.ProductOrderDTO;
 import com.example.emag.model.dto.product.*;
+import com.example.emag.model.dto.user.UserCartDTO;
+import com.example.emag.model.dto.user.UserFavoritesDTO;
 import com.example.emag.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -127,6 +129,14 @@ public class ProductController extends AbstractController{
                                                 @RequestParam(required = false) boolean desc){
         return productService.filterMinMax(min, max, desc);
     }
-
-
+    @GetMapping("/users/cart")
+    public UserCartDTO lookUpUserCart(HttpServletRequest req){
+        checkIfLogged(req);
+        return userService.getCart((long) req.getSession().getAttribute("USER_ID"));
+    }
+    @GetMapping("/users/favorites")
+    public UserFavoritesDTO lookUpUserFavorites(HttpServletRequest req){
+        checkIfLogged(req);
+        return userService.getFavorites((long) req.getSession().getAttribute("USER_ID"));
+    }
 }

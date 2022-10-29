@@ -15,7 +15,7 @@ import javax.servlet.http.HttpSession;
 
 @RestController
 public class UserController extends AbstractController{
-
+    // todo махни тази проверка
     @PostMapping("/users")
     public UserWithoutPassDTO registerUser(@RequestBody RegisterDTO dto, HttpServletRequest req){
         if (checkIfLoggedBoolean(req.getSession())){
@@ -80,20 +80,5 @@ public class UserController extends AbstractController{
         checkIfLogged(req);
         checkIpWithSessionIp(req);
         return userService.lookUpAdminPassword(dto,(long)req.getSession().getAttribute("USER_ID"));
-    }
-    @GetMapping("/users/history")
-    public UserOrderHistoryDTO lookUpUserOrderHistory(HttpServletRequest req){
-        checkIfLogged(req);
-        return userService.getOrderHistory((long) req.getSession().getAttribute("USER_ID"));
-    }
-    @GetMapping("/users/cart")
-    public UserCartDTO lookUpUserCart(HttpServletRequest req){
-        checkIfLogged(req);
-        return userService.getCart((long) req.getSession().getAttribute("USER_ID"));
-    }
-    @GetMapping("/users/favorites")
-    public UserFavoritesDTO lookUpUserFavorites(HttpServletRequest req){
-        checkIfLogged(req);
-        return userService.getFavorites((long) req.getSession().getAttribute("USER_ID"));
     }
 }
