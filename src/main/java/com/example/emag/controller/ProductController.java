@@ -133,11 +133,11 @@ public class ProductController extends AbstractController{
     @GetMapping("/users/cart")
     public UserCartDTO lookUpUserCart(HttpServletRequest req){
         checkIfLogged(req);
-        return userService.getCart((long) req.getSession().getAttribute("USER_ID"));
+        return productService.getCart((long) req.getSession().getAttribute("USER_ID"));
     }
     @GetMapping("/users/favorites")
     public UserFavoritesDTO lookUpUserFavorites(HttpServletRequest req){
         checkIfLogged(req);
-        return userService.getFavorites((long) req.getSession().getAttribute("USER_ID"));
+        return productService.getFavorites((long) req.getSession().getAttribute("USER_ID"));
     }
 }

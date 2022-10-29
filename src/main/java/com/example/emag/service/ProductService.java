@@ -2,6 +2,9 @@ package com.example.emag.service;
 
 import com.example.emag.model.dto.order.ProductOrderDTO;
 import com.example.emag.model.dto.product.*;
+import com.example.emag.model.dto.user.UserCartDTO;
+import com.example.emag.model.dto.user.UserFavoritesDTO;
+import com.example.emag.model.dto.user.UserWithoutPassDTO;
 import com.example.emag.model.entities.*;
 import com.example.emag.model.exceptions.BadRequestException;
 import com.example.emag.model.exceptions.NotFoundException;
@@ -13,8 +16,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class ProductService extends AbstractService{
@@ -244,5 +245,15 @@ public class ProductService extends AbstractService{
 
     public Page<ProductQueryDTO> filterMinMax(int min, int max, boolean desc, Pageable pageable) {
         return productDAO.filterMinMaxPrice(min, max, desc, pageable);
+    }
+
+    public UserCartDTO getCart(long userId) {
+        UserWithoutPassDTO dto = modelMapper.map(getUserById(userId), UserWithoutPassDTO.class);
+        return modelMapper.map(dto,UserCartDTO.class);
+    }
+
+    public UserFavoritesDTO getFavorites(long userId) {
+        UserWithoutPassDTO dto = modelMapper.map(getUserById(userId), UserWithoutPassDTO.class);
+        return modelMapper.map(dto,UserFavoritesDTO.class);
     }
 }

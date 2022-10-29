@@ -2,6 +2,8 @@ package com.example.emag.service;
 
 import com.example.emag.model.dto.order.MadeOrderDTO;
 import com.example.emag.model.dto.order.ProductOrderDTO;
+import com.example.emag.model.dto.user.UserOrderHistoryDTO;
+import com.example.emag.model.dto.user.UserWithoutPassDTO;
 import com.example.emag.model.entities.*;
 import com.example.emag.model.exceptions.BadRequestException;
 import org.springframework.stereotype.Service;
@@ -101,5 +103,10 @@ public class OrderService extends AbstractService{
         else{
             return totalPrice + (regularPrice * quantity);
         }
+    }
+
+    public UserOrderHistoryDTO getOrderHistory(long userId) {
+        UserWithoutPassDTO dto = modelMapper.map(getUserById(userId), UserWithoutPassDTO.class);
+        return modelMapper.map(dto,UserOrderHistoryDTO.class);
     }
 }

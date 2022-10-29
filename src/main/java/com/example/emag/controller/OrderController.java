@@ -24,6 +24,6 @@ public class OrderController extends AbstractController{
     @GetMapping("/users/history")
     public UserOrderHistoryDTO lookUpUserOrderHistory(HttpServletRequest req){
         checkIfLogged(req);
-        return userService.getOrderHistory((long) req.getSession().getAttribute("USER_ID"));
+        return orderService.getOrderHistory((long) req.getSession().getAttribute("USER_ID"));
     }
 }

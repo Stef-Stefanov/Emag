@@ -221,21 +221,4 @@ public class UserService extends AbstractService{
                 .orElseThrow(()-> new GoneEntityException("No such user!"))
                 .isAdmin();
     }
-    public UserWithoutPassDTO getById(Long uid) {
-        User u = userRepository.findById(uid).orElseThrow(() -> new BadRequestException("No such user found"));
-        return transformUserIntoUserWithoutPassDTO(u);
-    }
-
-    public UserOrderHistoryDTO getOrderHistory(long userid) {
-        UserWithoutPassDTO dto = getById(userid);
-        return modelMapper.map(dto,UserOrderHistoryDTO.class);
-    }
-    public UserCartDTO getCart(long userid) {
-        UserWithoutPassDTO dto = getById(userid);
-        return modelMapper.map(dto,UserCartDTO.class);
-    }
-    public UserFavoritesDTO getFavorites(long userid) {
-        UserWithoutPassDTO dto = getById(userid);
-        return modelMapper.map(dto,UserFavoritesDTO.class);
-    }
 }
