@@ -123,9 +123,10 @@ public class ProductController extends AbstractController{
     }
 
     @GetMapping("/products/filter")
-    public List<ProductQueryDTO> filterProducts(@RequestParam int min, @RequestParam int max,
-                                                @RequestParam(required = false) boolean desc){
-        return productService.filterMinMax(min, max, desc);
+    public Page<ProductQueryDTO> filterProducts(@RequestParam int min, @RequestParam int max,
+                                                @RequestParam(required = false) boolean desc,
+                                                Pageable pageable){
+        return productService.filterMinMax(min, max, desc, pageable);
     }
 
 

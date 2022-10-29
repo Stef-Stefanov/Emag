@@ -29,12 +29,12 @@ public class ReviewController extends AbstractController {
         return reviewService.add(dto, uid, pid);
     }
 
-    @GetMapping("/reviews/users/{uid}")
+    @GetMapping("/users/{uid}/reviews")
     public List<ReviewFromUsersDTO> getAllReviewsFromUser (@PathVariable long uid){
         return reviewService.getAllReviewsFromUser(uid);
     }
 
-    @GetMapping("/reviews/products/{pid}")
+    @GetMapping("/products/{pid}/reviews")
     public List<ReviewForProductDTO> getAllReviewsForProduct (@PathVariable long pid){
         return reviewService.getAllReviewsForProduct(pid);
     }

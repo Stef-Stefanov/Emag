@@ -173,15 +173,12 @@ public class ProductService extends AbstractService{
 
     public Page<ProductDTO> searchByWord(String word, Pageable pageable) {
         validateWord(word);
-        List<Product> products = productRepository.
-                findAllByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(word.strip(), word.strip());
-        int start = (int) pageable.getOffset();
-        int end = (Math.min((start + pageable.getPageSize()), products.size()));
-        Page<Product> productPage = new PageImpl<>(products.subList(start , end ) , pageable , products.size());
+        Page<Product> products = productRepository.
+                findAllByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(word.strip(), word.strip(), pageable);
         if(products.isEmpty()){
             throw new NotFoundException("No products found");
         }
-        return productPage.map(p -> modelMapper.map(p, ProductDTO.class));
+        return products.map(p -> modelMapper.map(p, ProductDTO.class));
     }
 
     private void validateWord(String word) {
@@ -210,7 +207,6 @@ public class ProductService extends AbstractService{
     }
 
     public Page<ProductDTO> findAll(Pageable pageable) {
-        Sort sort = pageable.getSort();
         Page<Product> products = productRepository.findAll(pageable);
         return products.map(p -> modelMapper.map(p, ProductDTO.class));
     }
@@ -246,7 +242,7 @@ public class ProductService extends AbstractService{
         return url;
     }
 
-    public List<ProductQueryDTO> filterMinMax(int min, int max, boolean desc) {
-        return productDAO.filterMinMaxPrice(min, max, desc);
+    public Page<ProductQueryDTO> filterMinMax(int min, int max, boolean desc, Pageable pageable) {
+        return productDAO.filterMinMaxPrice(min, max, desc, pageable);
     }
 }
