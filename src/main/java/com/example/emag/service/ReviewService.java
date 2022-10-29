@@ -22,7 +22,6 @@ public class ReviewService extends AbstractService{
         validateDTO(dto);
         User user = getUserById(uid);
         Product product = getProductById(pid);
-        checkIfProductIsAlreadyReviewed(user, product);
         Review review = new Review();
         review.setProduct(product);
         review.setUser(user);
@@ -30,15 +29,6 @@ public class ReviewService extends AbstractService{
         review.setRating(dto.getRating());
         review.setText(dto.getText());
         return modelMapper.map(reviewRepository.save(review), ReviewResponseDTO.class);
-    }
-
-    private void checkIfProductIsAlreadyReviewed(User user, Product product) {
-        List<Review> reviews = user.getReviews();
-        for (Review review : reviews){
-            if(review.getProduct().equals(product)){
-                throw new BadRequestException("Product has already been reviewed by this user");
-            }
-        }
     }
 
     private void validateDTO(ReviewRequestDTO dto){
