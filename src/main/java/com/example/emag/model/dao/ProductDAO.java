@@ -19,8 +19,7 @@ public class ProductDAO {
     public Page<ProductQueryDTO> filterMinMaxPrice(int min, int max, boolean desc, Pageable pageable) {
         String order = desc ? "DESC" : "ASC";
         List<ProductQueryDTO> list = jdbcTemplate.query("SELECT * FROM products WHERE regular_price" +
-                        " BETWEEN ? AND ? ORDER BY " + "regular_price " + order + " LIMIT " + pageable.getPageSize() + " " +
-                        "OFFSET " + pageable.getOffset(),
+                        " BETWEEN ? AND ? ORDER BY regular_price " + order + " LIMIT ? OFFSET ?",
                 (rs, rowNum) -> new ProductQueryDTO(
                         rs.getLong("id"),
                         rs.getString("name"),
@@ -28,7 +27,7 @@ public class ProductDAO {
                         rs.getDouble("regular_price"),
                         rs.getInt("quantity"),
                         rs.getLong("category_id"),
-                        rs.getLong("discount_id")), min, max);
+                        rs.getLong("discount_id")), min, max, pageable.getPageSize(), pageable.getOffset());
         return new PageImpl<>(list, pageable, list.size());
         }
     }
