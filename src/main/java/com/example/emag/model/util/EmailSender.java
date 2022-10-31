@@ -12,6 +12,7 @@ public class EmailSender {
     private JavaMailSender javaEmailSender;
 
     public void sendMessage(String receiver, Product product) {
+        new Thread(() -> {
         SimpleMailMessage email = new SimpleMailMessage();
         email.setTo(receiver);
         email.setSubject("Favourite product on discount");
@@ -21,5 +22,7 @@ public class EmailSender {
                         ((double)product.getDiscount().getDiscountPercentage()/100)))
         + "$. Limited offer until " + product.getDiscount().getExpireDate());
         javaEmailSender.send(email);
+        }).start();
+
     }
 }
