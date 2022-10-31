@@ -45,7 +45,7 @@ public class CategoryService extends AbstractService{
     public CategoryWithSubcategoryDTO getCategory(long id) {
         Category category = getCategoryById(id);
         return modelMapper.map(category, CategoryWithSubcategoryDTO.class);
-    }
+    } // todo remove?
 
     public CategoryWithSubcategoryDTO edit(long id, CategoryRequestDTO dto) {
         validateDTO(dto);

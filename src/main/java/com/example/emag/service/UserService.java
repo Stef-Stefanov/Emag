@@ -20,14 +20,11 @@ import java.util.stream.Collectors;
 public class UserService extends AbstractService{
     public UserWithoutPassDTO loginUser(LoginDTO dto) {
         String email = dto.getEmail();
-
         if( ! validateEmail(email) || ! validatePassword(dto.getPassword())){
             throw new BadRequestException("Wrong credentials");
         }
-
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UnauthorizedException("Wrong credentials!  B"));
-
         if (passwordEncoder.matches(dto.getPassword(),user.getPassword())){
             return transformUserIntoUserWithoutPassDTO(user);
         }
@@ -36,20 +33,15 @@ public class UserService extends AbstractService{
 
     @Transactional
     public UserWithoutPassDTO registerUser(RegisterDTO dto){
-
         validate(dto);
         checkEmailAvailability(dto.getEmail());
-
         dto.setPassword(passwordEncoder.encode(dto.getPassword()));
-
         User result = modelMapper.map(dto, User.class);
         result.setSubscribed(true);
         result.setAdmin(false);
         result.setCreatedAt(LocalDateTime.now());
         userRepository.save(result);
-
         LoginDTO loginDTO = transformRegisterDtoIntoLoginDto(dto);
-
         return loginUser(loginDTO);
     }
 
@@ -210,7 +202,8 @@ public class UserService extends AbstractService{
     }
     public boolean checkIfAdminUserId(long uid){
         return userRepository.findById(uid)
-                .orElseThrow(()-> new GoneEntityException("No such user!"))
+                .orElseThrow(()-> new
+                        GoneEntityException("No such user!"))
                 .isAdmin();
     }
 }

@@ -1,11 +1,11 @@
 Категории:
 
-“name”:“Компютри & Периферия”			1
-	"name":"Монитори"			3
-	"name":"Лаптопи"			4
-	"name":"PC компоненти"			5
+"name":"Компютри & Периферия"			1
+	"name":"Монитори"	   		        3
+	"name":"Лаптопи"  			        4
+	"name":"PC компоненти"			    5
         	"name":"Графични карти"		6
-        	"name":"Процесори"		7
+        	"name":"Процесори"		    7
 "name":"Големи електроуреди"			2
 
 Продукти:
@@ -23,7 +23,7 @@
     		"categoryId": 4
 	Product 3:
     		"name": "Лаптоп ASUS Chromebook C223NA-GJ0055",		
-		"description": "лаптоп 11.6", HD, Intel Celeron N3350 (1.10/2.40GHz, 2M), Intel HD Graphics 500, 4 GB, 32 GB SSD - 90NX01Q1-M00810",
+		"description": "лаптоп 11.6, HD, Intel Celeron N3350 (1.10/2.40GHz, 2M), Intel HD Graphics 500, 4 GB, 32 GB SSD - 90NX01Q1-M00810",
 		"regularPrice": 348,
 		"quantity": 95,
 		"categoryId": 4
@@ -41,7 +41,7 @@
     		"categoryId": 3
 	Product 6:
     		"name": "Монитор Gaming Samsung",
-    		"description": "LS32BG850NUXEN, Извит, 4K, 32", 240Hz, VA, 16:9, 1000cd/m2, 1ms, DisplayPort, HDMI, HDCP, USB, Pivot, Черен",
+    		"description": "LS32BG850NUXEN, Извит, 4K, 32, 240Hz, VA, 16:9, 1000cd/m2, 1ms, DisplayPort, HDMI, HDCP, USB, Pivot, Черен",
     		"regularPrice": 1399,
     		"quantity": 70,
     		"categoryId": 3
@@ -89,7 +89,7 @@
     		"categoryId": 7	
 	Product 14:
     		"name": "Лаптоп Apple MacBook Air 13",
-    		"description": "True Tone, 13", Apple M1, RAM 8GB, SSD 256GB, 8 ядра CPU и 7 ядра GPU, Space Grey, INT KB ",
+    		"description": "True Tone, 13, Apple M1, RAM 8GB, SSD 256GB, 8 ядра CPU и 7 ядра GPU, Space Grey, INT KB ",
     		"regularPrice": 2199,
     		"quantity": 50,
     		"categoryId": 4
@@ -127,13 +127,13 @@
 Потребители:
 
 	Потребител 1:
-    		"email":"staynov@dr.com",
+    	"email":"staynov@dr.com",
 		"password":"123aA@",
 		"confirmPassword":"123aA@",
 		"firstName":"Petko",
 		"lastName":"Staynov",
 		"phoneNumber":"0896454554",
-		"birthDate":"1896:12:01"
+		"birthDate":"1896-12-01"
 		
 		Парола в mail.com - v7PUK7VhZZEJgR2	
 		

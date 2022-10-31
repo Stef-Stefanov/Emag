@@ -43,7 +43,6 @@ public class User {
     private List<UserProductsInCart> productsInCart;
     @OneToMany(mappedBy = "user")
     private List<Review> reviews;
-    //todo be tested
     @OneToMany(mappedBy = "user")
     private List<Order> pastOrders;
 }

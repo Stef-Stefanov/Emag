@@ -1,12 +1,7 @@
 package com.example.emag.controller;
 
-import com.example.emag.model.dto.cart.UserHasProductsInCardWithoutUserIdDTO;
 import com.example.emag.model.dto.user.*;
-import com.example.emag.model.entities.User;
 import com.example.emag.model.exceptions.BadRequestException;
-import com.example.emag.model.exceptions.UnauthorizedException;
-import com.example.emag.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,13 +10,12 @@ import javax.servlet.http.HttpSession;
 
 @RestController
 public class UserController extends AbstractController{
-    // todo махни тази проверка
     @PostMapping("/users")
     public UserWithoutPassDTO registerUser(@RequestBody RegisterDTO dto, HttpServletRequest req){
         if (checkIfLoggedBoolean(req.getSession())){
             throw new BadRequestException("You are already logged in");
         }
-        if(!dto.getPassword().equals(dto.getConfirmPassword())){
+        if( ! dto.getPassword().equals(dto.getConfirmPassword())){
             throw new BadRequestException("Passwords mismatch!");
         }
         UserWithoutPassDTO withoutPassDTO = userService.registerUser(dto);

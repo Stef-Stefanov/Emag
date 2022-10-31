@@ -1,8 +1,9 @@
 package com.example.emag.model.dto.user;
 
-import com.example.emag.model.dto.cart.UserHasProductsInCardWithoutUserIdDTO;
+import com.example.emag.model.dto.cart.CartWithProductWithQuantityDTO;
 import com.example.emag.model.dto.order.OrderWithoutOwnerDTO;
 import com.example.emag.model.dto.product.ProductDTO;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -16,11 +17,13 @@ public class UserWithoutPassDTO {
     private String lastName;
     private String email;
     private String createdAt;
-    private int isSubscribed;
-    private int isAdmin;
+    @JsonProperty
+    private boolean isSubscribed;
+    @JsonProperty
+    private boolean isAdmin;
     private String phoneNumber;
     private LocalDate birthDate;
     private List<ProductDTO> likedProducts;
-    private List<UserHasProductsInCardWithoutUserIdDTO> productsInCart;
+    private List<CartWithProductWithQuantityDTO> productsInCart;
     private List<OrderWithoutOwnerDTO> pastOrders;
 }

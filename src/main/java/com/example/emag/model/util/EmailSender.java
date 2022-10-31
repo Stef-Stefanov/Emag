@@ -23,6 +23,5 @@ public class EmailSender {
         + "$. Limited offer until " + product.getDiscount().getExpireDate());
         javaEmailSender.send(email);
         }).start();
-
     }
 }

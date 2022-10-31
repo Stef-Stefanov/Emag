@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS `emag`.`users` (
   PRIMARY KEY (`id`),
   UNIQUE INDEX `user_email` (`email` ASC) VISIBLE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 28
+AUTO_INCREMENT = 1
 DEFAULT CHARACTER SET = utf8mb3;
 
 
@@ -71,7 +71,7 @@ CREATE TABLE IF NOT EXISTS `emag`.`categories` (
     FOREIGN KEY (`parent_category_id`)
     REFERENCES `emag`.`categories` (`id`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 43
+AUTO_INCREMENT = 1
 DEFAULT CHARACTER SET = utf8mb3;
 
 
@@ -85,7 +85,7 @@ CREATE TABLE IF NOT EXISTS `emag`.`discounts` (
   `expire_date` DATETIME NOT NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 9
+AUTO_INCREMENT = 1
 DEFAULT CHARACTER SET = utf8mb3;
 
 
@@ -97,7 +97,7 @@ CREATE TABLE IF NOT EXISTS `emag`.`features` (
   `name` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 10
+AUTO_INCREMENT = 1
 DEFAULT CHARACTER SET = utf8mb3;
 
 
@@ -115,7 +115,7 @@ CREATE TABLE IF NOT EXISTS `emag`.`orders` (
     FOREIGN KEY (`user_id`)
     REFERENCES `emag`.`users` (`id`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 53
+AUTO_INCREMENT = 1
 DEFAULT CHARACTER SET = utf8mb3;
 
 
@@ -141,7 +141,7 @@ CREATE TABLE IF NOT EXISTS `emag`.`products` (
     FOREIGN KEY (`discount_id`)
     REFERENCES `emag`.`discounts` (`id`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 44
+AUTO_INCREMENT = 1
 DEFAULT CHARACTER SET = utf8mb3;
 
 
@@ -197,7 +197,7 @@ CREATE TABLE IF NOT EXISTS `emag`.`products_images` (
     FOREIGN KEY (`product_id`)
     REFERENCES `emag`.`products` (`id`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 17
+AUTO_INCREMENT = 1
 DEFAULT CHARACTER SET = utf8mb3;
 
 
@@ -221,7 +221,7 @@ CREATE TABLE IF NOT EXISTS `emag`.`reviews` (
     FOREIGN KEY (`user_id`)
     REFERENCES `emag`.`users` (`id`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 29
+AUTO_INCREMENT = 1
 DEFAULT CHARACTER SET = utf8mb3;
 
 

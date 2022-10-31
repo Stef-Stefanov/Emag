@@ -37,6 +37,7 @@ public class ProductController extends AbstractController{
     }
 
     @PostMapping("/products/{pid}/cart")
+
     public ProductOrderDTO addProductInCart(@PathVariable int pid, HttpServletRequest req, @RequestParam int quantity){
         long uid = getLoggedUserId(req);
         return productService.addToCart(pid, uid, quantity);
@@ -67,7 +68,7 @@ public class ProductController extends AbstractController{
 
     @PostMapping("/products/{pid}/features/{fid}")
     public ProductWithFeaturesDTO addFeatureToProduct(@PathVariable int pid, @PathVariable int fid,
-                                                      @RequestParam String value, HttpServletRequest req){;
+                                                      @RequestParam String value, HttpServletRequest req){
         checkIfAdmin(req);
         return productService.addFeature(pid, fid, value);
     }
