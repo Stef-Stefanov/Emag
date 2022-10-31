@@ -78,16 +78,16 @@ public class UserService extends AbstractService{
             throw new BadRequestException("New password mismatch");
         }
         validatePassword(dto.getNewPassword());
-        User u = checkCredentials(dto.getPassword(),userID);
+        String[] arr ={dto.getPassword()};
+        User u = checkUserByIdWithInputPassAndEmail(arr,userID);
         u.setPassword(passwordEncoder.encode(dto.getNewPassword()));
         userRepository.save(u);
     }
 
 
     public void makeAdmin(AdminDTO dto, long userID){
-
-        User u = checkCredentials(dto.getPassword(), userID);
-
+        String[] arr ={dto.getPassword()};
+        User u = checkUserByIdWithInputPassAndEmail(arr, userID);
         if (! dto.getAdminPassword().equals(adminPassword)) {
             throw new UnauthorizedException("Wrong credentials! Q");
         }
@@ -96,7 +96,8 @@ public class UserService extends AbstractService{
     }
 
     public String lookUpAdminPassword(LoginDTO dto, long userID) {
-        User u = checkCredentials(dto, userID);
+        String[] arr = {dto.getPassword(),dto.getEmail()};
+        User u = checkUserByIdWithInputPassAndEmail(arr , userID);
         if (!u.isAdmin()){
             throw new UnauthorizedException("You are not an administrator!");
         }
@@ -157,12 +158,12 @@ public class UserService extends AbstractService{
     /**
      =======================================================
      Validates correct birthdate. Accepts three mySQL accepted delimiters.
-     Todo needs to implement correct date and time logic -> no 32 of month 13.
+     Todo needs to implement a Interceptor that checks for malformed JSON.
      Also year needs to be after 1723 as sql doesn't support older years.
     */
     private boolean validateBirthDate(LocalDate birthDate){
         if (birthDate.getYear() < 1800 || birthDate.getYear() > 2100 || birthDate.isAfter(LocalDate.now())) {
-            throw new BadRequestException("Date of birth is not compliant");
+            throw new BadRequestException("Date of birth is out of range");
         }
         return true;
     }
@@ -199,23 +200,14 @@ public class UserService extends AbstractService{
         }
         return dto;
     }
-    // todo merge into one method and rename!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    public User checkCredentials(LoginDTO dto, long userID){
+    public User checkUserByIdWithInputPassAndEmail(String[] arr, long userID){
         User u = userRepository.findById(userID).orElseThrow();
-        if ( ! (passwordEncoder.matches(dto.getPassword(), u.getPassword())
-                && dto.getEmail().equals(u.getEmail()))){
+        if ( ! (passwordEncoder.matches(arr[0], u.getPassword())
+                && (arr.length == 1 || arr[1].equals(u.getEmail())))){
             throw new UnauthorizedException("Wrong credentials! D");
         }
         return u;
     }
-    public User checkCredentials(String pass, long userID){
-        User u = userRepository.findById(userID).orElseThrow();
-        if (!passwordEncoder.matches(pass, u.getPassword())) {
-            throw new UnauthorizedException("Wrong credentials! D");
-        }
-        return u;
-    }
-    // todo merge into one method and rename!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     public boolean checkIfAdminUserId(long uid){
         return userRepository.findById(uid)
                 .orElseThrow(()-> new GoneEntityException("No such user!"))

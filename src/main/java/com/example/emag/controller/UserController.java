@@ -67,7 +67,7 @@ public class UserController extends AbstractController{
         userService.updatePass(dto, (long)req.getSession().getAttribute(USER_ID));
     }
     @PutMapping("/users/admin")
-    public void giveAdminPrivileges(@RequestBody AdminDTO dto, HttpServletRequest req){
+    public void setAdminPrivileges(@RequestBody AdminDTO dto, HttpServletRequest req){
         validateSession(req);
         userService.makeAdmin(dto, (long)req.getSession().getAttribute(USER_ID));
     }
