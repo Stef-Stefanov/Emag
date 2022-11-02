@@ -52,7 +52,7 @@
     		"quantity": 15,
     		"categoryId": 6
 	Product 8:
-   		"name": "GeForce RTX 4090",
+   		    "name": "GeForce RTX 4090",
     		"description": "лаптоп EXCLUSIVE HYPE-TRAIN Eddition copy 24 GB GDDR6X, Ray Tracing Cores 3rd Generation",
     		"regularPrice": 9999,
     		"quantity": 1,
@@ -115,7 +115,7 @@
 	Поръчка едно:
 		Product 4: "name": "Монитор Dell 27" x2
 		Product 9: "name": "Palit GeForce RTX™ 2060 Dual"
-        Поръчка две:
+	Поръчка две:
 		Product 10: "name": "GeForce® GTX 1650 OC", x10
 
 Количка запазена на един потребител:
@@ -141,7 +141,7 @@
 		“isAdmin”:true
 
 	Потребител 2:
-    		"email":"liub_pipkov@musician.org",
+    	"email":"liub_pipkov@musician.org",
 		"password":"Sk512!",
 		"confirmPassword":"Sk512!",
 		"firstName":"Любомир",
@@ -155,7 +155,7 @@
 		“isAdmin”:true
 
 	Потребител 3: За регистрация.
-    		"email":"krasimir.stoev@ittalents.bg",
+    	"email":"krasimir.stoev@ittalents.bg",
 		"password":"jN302$",
 		"confirmPassword":"jN302$",
 		"firstName":"Krassimir",
@@ -169,7 +169,7 @@
 За демото:
 
 	Потребител 3: За регистрация.
-    		"email":"krasimir.stoev@ittalents.bg",
+    	"email":"krasimir.stoev@ittalents.bg",
 		"password":"jN302$",
 		"confirmPassword":"jN302$",
 		"firstName":"Krassimir",
